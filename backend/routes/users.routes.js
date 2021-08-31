@@ -1,5 +1,4 @@
 const express = require("express");
-const Book = require("../models/books.model");
 const router = express.Router();
 const User = require("../models/users.model");
 
@@ -19,13 +18,14 @@ router
     console.log("User Registration page");
   })
   .post((req, res) => {
-    const data = req.body;
-
-    User.create(data, (err) => {
+    const newUser = new User(req.body);
+    newUser.save((err, user) => {
       if (err) {
         res.status(400).json({ msg: "Registration Error", error: err });
       } else {
-        res.status(200).json({ msg: "User Registration Successful!" });
+        res
+          .status(200)
+          .json({ msg: "User Registration Successful!", userID: user._id });
       }
     });
   });
@@ -38,17 +38,20 @@ router
   .post((req, res) => {
     const loginData = req.body;
 
-    User.find(loginData, (err, data) => {
-      if (err) {
-        res.status(400).json({ msg: "Login Error!", error: err });
-      } else if (!data) {
-        res.status(401).json({ msg: "Sorry, User not found!" });
-      } else {
-        res
-          .status(200)
-          .json({ msg: "User Login Successful", userID: data[0]._id });
+    User.find(
+      { email: loginData?.email, password: loginData?.password },
+      (err, data) => {
+        if (err) {
+          res.status(400).json({ msg: "Login Error!", error: err });
+        } else if (!data) {
+          res.status(401).json({ msg: "Sorry, User not found!" });
+        } else {
+          res
+            .status(200)
+            .json({ msg: "User Login Successful", userID: data[0]._id });
+        }
       }
-    });
+    );
   });
 
 router
@@ -59,7 +62,7 @@ router
       if (err) {
         res.status(404).json({ msg: "User Id Error, not found!", error: err });
       } else {
-        res.status(200).json({ userData: data });
+        res.status(200).json({ data });
       }
     });
   })
