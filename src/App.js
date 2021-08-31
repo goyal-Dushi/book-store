@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { Container } from "react-bootstrap";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Login from "./pages/Login";
+import RegisterPage from "./pages/Register";
+import UserProfile from "./pages/UserProfile";
+import BookList from "./pages/BookList";
+import Checkout from "./pages/Checkout";
+import Home from "./pages/Home";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container fluid={"md"}>
+      <Router>
+        <Switch>
+          <Route path={"/"} exact component={Home} />
+          <Route path={"/login"} exact component={Login} />
+          <Route path={"/register"} exact component={RegisterPage} />
+          <Route path={"/profile/:id"} component={UserProfile} />
+          <Route path={"/booklist/:id"} component={BookList} />
+          <Route path={"/cartCheckout/:id"} component={Checkout} />
+        </Switch>
+      </Router>
+    </Container>
   );
 }
 
