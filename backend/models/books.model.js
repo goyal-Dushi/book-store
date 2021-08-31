@@ -11,21 +11,25 @@ const booksSchema = new mongoose.Schema(
       // required : true,
     },
     sellerName: {
-      type: "String",
+      type: String,
       required: true,
     },
     sellerAddress: {
-      type: "String",
+      type: String,
       required: true,
     },
     isAvailable: {
-      type: "Boolean",
+      type: Boolean,
     },
     stock: {
-      type: "Number",
+      type: Number,
+      required: true,
     },
     soldOn: {
-      type: "Date",
+      type: Date,
+    },
+    price: {
+      type: Number,
     },
   },
   {
