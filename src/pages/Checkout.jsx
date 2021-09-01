@@ -9,7 +9,6 @@ function Checkout() {
   const location = useLocation();
   const [checkedBooks, setCheckedBooks] = useState([]);
   const { id } = useParams();
-  // console.log(location);
   const history = useHistory();
   const handleRemove = (index) => {
     let items = [...checkedBooks];
@@ -17,6 +16,12 @@ function Checkout() {
     items.splice(index, 1);
     console.log("After Remove: ", items);
     setCheckedBooks(items);
+  };
+
+  const containerStyle = {
+    display: "flex",
+    justifyContent: "space-evenly",
+    alignItems: "center",
   };
 
   useEffect(() => {
@@ -40,7 +45,7 @@ function Checkout() {
         return { ...book, stock: newStock, soldOn: new Date().toDateString() };
       });
       const response = await axios
-        .patch("http://localhost:5000/checkout/" + id, newList)
+        .put("http://localhost:5000/checkout/" + id, newList)
         .then((res) => res.data)
         .catch((err) => {
           console.log("Error Book Checkout: ", err);
@@ -48,10 +53,9 @@ function Checkout() {
       console.log(response);
       setTotal(0);
       setCheckedBooks([]);
-      history.goBack();
+      history.push("/profile/" + id);
     }
     return;
-    // history.push("/booklist/" + id);
   };
 
   return (
@@ -60,10 +64,7 @@ function Checkout() {
       <Container
         fluid={"md"}
         style={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-          position: "relative",
+          ...containerStyle,
           flexDirection: "column",
           height: "100%",
         }}>
@@ -97,14 +98,7 @@ function Checkout() {
             marginTop: "50px",
             marginBottom: "0px",
           }}>
-          <Container
-            style={{
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              position: "relative",
-            }}
-            fluid={"md"}>
+          <Container style={{ ...containerStyle }} fluid={"md"}>
             <div> {`Total: ${bookTotal}`} </div>
             <Link style={{ textDecoration: "none" }}>
               <Button
