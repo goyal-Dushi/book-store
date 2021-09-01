@@ -81,7 +81,7 @@ function BookForm(props) {
           value={
             props?.type === "add"
               ? props?.sellerAddress
-              : editBookDetail?.sellerName
+              : editBookDetail?.sellerAddress
           }
           disabled={props?.type === "add" ? true : false}
           onChange={(e) =>
