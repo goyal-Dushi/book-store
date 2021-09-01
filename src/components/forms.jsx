@@ -83,18 +83,18 @@ function UserForms(props) {
                 />
               </FormGroup>
               <FormGroup className={"mb-3"}>
-                {/* <FormControl required> */}
                 <select
-                  defaultValue={"buyer"}
+                  className={"form-select"}
                   onChange={(e) =>
                     e.target.value === "seller"
                       ? setUserDetail({ ...userDetail, isSeller: true })
                       : setUserDetail({ ...userDetail, isSeller: false })
                   }>
-                  <option value={"buyer"}> {"User"} </option>
+                  <option selected value={"buyer"}>
+                    {"User"}
+                  </option>
                   <option value={"seller"}> {"Seller"} </option>
                 </select>
-                {/* </FormControl> */}
               </FormGroup>
             </>
           ) : null}
