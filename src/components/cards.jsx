@@ -57,9 +57,21 @@ function Cards(props) {
         <Card.Body>
           <Card.Title>{props.sellerName}</Card.Title>
           <Card.Text>{"Seller Address: " + props.sellerAddress}</Card.Text>
-          <Card.Text>{"Receiving Address: " + props?.address}</Card.Text>
+          {/* <Card.Text>{"Receiving Address: " + props?.address}</Card.Text> */}
           <Card.Text>{"Price: " + props?.price}</Card.Text>
           <Card.Text>{"Sold On: " + props?.soldOn?.slice(0, 10)}</Card.Text>
+        </Card.Body>
+      </Card>
+    );
+  } else if (props.type === "bookListed") {
+    return (
+      <Card style={{ width: "18rem" }}>
+        <Card.Header>{props.name}</Card.Header>
+        <Card.Body>
+          <Card.Title>{props.sellerName}</Card.Title>
+          <Card.Text>{"Seller Address: " + props.sellerAddress}</Card.Text>
+          <Card.Text>{"Price: " + props?.price}</Card.Text>
+          <Card.Text> {"Stock: " + props?.stock} </Card.Text>
         </Card.Body>
       </Card>
     );
