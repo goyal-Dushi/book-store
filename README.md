@@ -1,30 +1,44 @@
-# Getting Started with Create React App
+# Welcome all 👋
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Overview --> Online Book Store 📖
+This is a **`MERN`** stack application currenty featuring the basic functionality of an online book e-commerce site. 
 
-## Available Scripts
 
-In the project directory, you can run:
 
-### `npm start`
+https://user-images.githubusercontent.com/40212568/131800665-30d883a2-2757-4583-a474-b4c74867b92d.mp4
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Don't just fork the repo , do leave a ⭐
 
-### `npm test`
+## Table of Contents: 📑
+* [Tech Stack](##tech-stack)
+* [Usage & Installation](##usage-&-installation)
+* [Contribution Guidelines](##contribution-guidelines)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack
+The tech behind the application is MERN Stack:
+1) `M` : Mongo DB
+2) `E` : Express 
+3) `R` : React 
+4) `N` : Node
 
-### `npm run build`
+Apart from this, Css Lib like `Bootstrap` is used in order to make site responsive and for other stylings 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Usage & Installation 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The root dir of the project contains the frontend made with React. The backend is inside the **`backend`** dir.Thus, you will have two **`package.json`** files, one for backend Node and one for frontend React
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Hit `npm install` for each dir (root & backend) to install the dependencies for frontend and backend respectively
+- Run `node/nodemon index.js` to run the backend
+- To run the React frontend , go to root dir and run `npm start`
+
+You will be redirected to the `localhost:3000`.
+
+**Note** : When running the backend , you should see `Server started at 5000 & Database connection successful` ensuring that your backend server has successfully started and MongoDB database connection has been established
+
+**Note** : You need to have _mongo_ installed on you computer to be able to run the project. If not , install from [here](https://docs.mongodb.com/manual/installation/)
+
+## Contribution Guidelines 🖥️
+* Please wait for the issue to be assigned before addressing any.
+* Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+* **`no PR accepted on main/master branch`**, ensure to make separate branch while working on any issue.
