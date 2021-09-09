@@ -19,10 +19,6 @@ app.use(
   })
 );
 
-app.use(cookieParser());
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(
   session({
     secret: "somesecrestofBookstore@123%78237dfnisn",
@@ -30,6 +26,10 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
 
 const mongoURI = "mongodb://localhost:27017/bookStore";
 
