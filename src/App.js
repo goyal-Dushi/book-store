@@ -13,7 +13,7 @@ import { UserDetailsContext } from "./components/contexts/userContext";
 import { useContext } from "react";
 
 function App() {
-  const { uid } = useContext(UserDetailsContext);
+  const { userData } = useContext(UserDetailsContext);
   return (
     <>
       <AlertContextBox>
@@ -23,7 +23,7 @@ function App() {
             <Alert />
             <Switch>
               <Route path={"/"} exact component={Home} />
-              {uid ? (
+              {userData?._id ? (
                 <>
                   <Route path={"/profile"} component={UserProfile} />
                   <Route path={"/booklist"} component={BookList} />
