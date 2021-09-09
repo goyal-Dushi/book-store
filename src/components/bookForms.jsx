@@ -16,7 +16,7 @@ function BookForm(props) {
     if (props?.type === "edit") {
       setEditBookDetail(props?.bookData);
     }
-  }, [props?.type]);
+  }, [props]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
