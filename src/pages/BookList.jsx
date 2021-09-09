@@ -1,23 +1,14 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import {
-  Container,
-  FormControl,
-  InputGroup,
-  Navbar,
-  Button,
-} from "react-bootstrap";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { Container, FormControl, InputGroup, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import Cards from "../components/cards";
 
 function BookList() {
   const [books, setBooks] = useState([]);
   const [cartItem, setCartItem] = useState([]);
   const [search, setSearch] = useState("");
-  const { id } = useParams();
-  const history = useHistory();
 
-  console.log(books);
   useEffect(() => {
     const getBooks = async () => {
       const resdata = await axios
@@ -32,30 +23,44 @@ function BookList() {
     document.title = "All Books!";
   }, []);
 
+  const searchBook = (books) => {
+    const response = books
+      ?.filter(
+        (book) => book.name.toLowerCase().search(search.toLowerCase()) !== -1
+      )
+      .map((book, i) => (
+        <Cards
+          key={i}
+          type={"book"}
+          bookData={book}
+          addToCart={true}
+          cartItem={cartItem}
+          setCartItem={setCartItem}
+        />
+      ));
+    return response;
+  };
+
   return (
     <>
-      <Navbar bg='light' variant='light'>
-        <Container>
-          <Navbar.Brand href='#'> {"BookStore"} </Navbar.Brand>
-          <Link
-            to={{
-              pathname: `/cartCheckout/${id}`,
-              state: {
-                bookList: JSON.stringify(cartItem),
-              },
-            }}
-            style={{ textDecoration: "none" }}>
-            <Button variant={"dark"}>
-              {`Proceed to checkout : ${cartItem?.length}`}
-            </Button>
-            <Link to={"/profile/" + id} style={{ textDecoration: "none" }}>
-              <Button variant={"outline-primary"}>{"Profile"}</Button>
-            </Link>
-          </Link>
-        </Container>
-      </Navbar>
-
-      <h4 className={"display-5"}> {"Search for Your Fav books"} </h4>
+      <Container
+        className={"d-flex justify-content-between"}
+        style={{ flexWrap: "wrap" }}
+        fluid={"md"}>
+        <h4 className={"display-5"}> {"Search for Your Fav books"} </h4>
+        <Link
+          to={{
+            pathname: `/cartCheckout`,
+            state: {
+              bookList: JSON.stringify(cartItem),
+            },
+          }}
+          style={{ textDecoration: "none" }}>
+          <Button variant={"dark"}>
+            {`Proceed to checkout : ${cartItem?.length}`}
+          </Button>
+        </Link>
+      </Container>
       <Container fluid={"md"} className={"mt-3"}>
         <InputGroup className={"mt-2 mb-3"}>
           <FormControl
@@ -70,20 +75,10 @@ function BookList() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-evenly",
+            flexWrap: "wrap",
           }}>
           {search.length
-            ? books
-                ?.filter((book) => book?.name === search)
-                ?.forEach((book, i) => (
-                  <Cards
-                    key={i}
-                    type={"book"}
-                    bookData={book}
-                    addToCart={true}
-                    cartItem={cartItem}
-                    setCartItem={setCartItem}
-                  />
-                ))
+            ? searchBook(books)
             : books?.map((book, i) => (
                 <Cards
                   key={i}
