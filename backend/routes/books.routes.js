@@ -1,16 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const booksController = require("../controllers/books.controller");
 const Book = require("../models/books.model");
 
-router.route("/").get((req, res) => {
-  Book.find((err, data) => {
-    if (err) {
-      res.status(400).json({ msg: "Not able to find books", error: err });
-    } else {
-      res.status(200).json({ data });
-    }
-  });
-});
+router.route("/").get(booksController.getAll_books);
+router.route("/add").post(booksController.add_book);
+router.route("/edit/:id").patch(booksController.edit_book);
+router.route("/delete/:id").delete(booksController.delete_book);
 
 router.route("/:id").get((req, res) => {
   const id = req.params.id;
@@ -22,41 +18,6 @@ router.route("/:id").get((req, res) => {
         .json({ msg: "Not able to fetch seller's books", error: err });
     } else {
       res.status(200).json({ data });
-    }
-  });
-});
-
-router.route("/add").post((req, res) => {
-  const bookDetails = req.body;
-  Book.create(bookDetails, (err) => {
-    if (err) {
-      res.status(400).json({ msg: "Not able to add book!", error: err });
-    } else {
-      res.status(200).json({ msg: "Book added successfully" });
-    }
-  });
-});
-
-router.route("/edit/:id").patch((req, res) => {
-  const editData = req.body;
-  const id = req.params.id;
-  Book.updateOne({ _id: id }, { $set: { ...editData } }, (err) => {
-    if (err) {
-      res.status(400).json({ msg: "Book update error", error: err });
-    } else {
-      res.status(200).json({ msg: "Book details updated Successfully!" });
-    }
-  });
-});
-
-router.route("/delete/:id").delete((req, res) => {
-  const id = req.params.id;
-
-  Book.findByIdAndDelete(id, (err, data) => {
-    if (err) {
-      res.status(402).json({ msg: "Book delete Error", error: err });
-    } else {
-      res.status(200).json({ msg: `Successfully removed ${data.name}` });
     }
   });
 });
