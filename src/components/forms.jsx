@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useContext } from "react";
 import { useState } from "react";
 import {
   Button,
@@ -9,6 +10,8 @@ import {
   Container,
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import { AlertContext } from "./contexts/alertContext";
+import { UserDetailsContext } from "./contexts/userContext";
 
 const initialState = {
   name: "",
@@ -21,34 +24,44 @@ const initialState = {
 function UserForms(props) {
   const [userDetail, setUserDetail] = useState(initialState);
   const history = useHistory();
+
+  const { setAlertState } = useContext(AlertContext);
+  const { setUserData } = useContext(UserDetailsContext);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let res;
-    console.log(userDetail);
     if (props?.type === "register") {
       res = await axios
-        .post("http://localhost:5000/users/register", userDetail)
+        .post("http://localhost:5000/users/register", userDetail, {
+          withCredentials: true,
+        })
         .then((res) => res.data)
         .catch((err) => {
           console.log("Error Registration:", err);
         });
-      console.log("Registration: ", res);
     } else {
       const loginDetail = {
-        email: userDetail.email,
+        username: userDetail.name,
         password: userDetail.password,
       };
       res = await axios
-        .post("http://localhost:5000/users/login", loginDetail)
+        .post("http://localhost:5000/users/login", loginDetail, {
+          withCredentials: true,
+        })
         .then((res) => res.data)
         .catch((err) => {
-          console.log("Error Registration:", err);
+          console.log("Error Logging in:", err);
         });
-      console.log("Login: ", res);
     }
+    console.log("login detail: ", res);
     setUserDetail(initialState);
-    if (res?.userID) {
-      history.push("/profile/" + res?.userID);
+    if (res?.status) {
+      setAlertState({ show: true, type: "success", msg: res?.msg });
+      setUserData(res?.data);
+      history.push("/profile");
+    } else {
+      setAlertState({ show: true, type: "danger", msg: res?.msg });
     }
     return;
   };
@@ -61,14 +74,15 @@ function UserForms(props) {
           {props.type === "register" ? (
             <>
               <FormGroup className={"mb-3"}>
-                <FormLabel>{"Name"}</FormLabel>
+                <FormLabel>{"Email"}</FormLabel>
                 <FormControl
-                  value={userDetail?.name}
+                  type={"email"}
+                  value={userDetail?.email}
                   onChange={(e) =>
-                    setUserDetail({ ...userDetail, name: e.target.value })
+                    setUserDetail({ ...userDetail, email: e.target.value })
                   }
                   required
-                  placeholder={"Enter Your Name"}
+                  placeholder={"Enter Your Email"}
                 />
               </FormGroup>
               <FormGroup className={"mb-3"}>
@@ -99,15 +113,14 @@ function UserForms(props) {
             </>
           ) : null}
           <FormGroup className={"mb-3"}>
-            <FormLabel>{"Email ID"}</FormLabel>
+            <FormLabel>{"Username"}</FormLabel>
             <FormControl
-              value={userDetail?.email}
+              value={userDetail?.name}
               onChange={(e) =>
-                setUserDetail({ ...userDetail, email: e.target.value })
+                setUserDetail({ ...userDetail, name: e.target.value })
               }
-              type={"email"}
               required
-              placeholder={"Enter Email"}
+              placeholder={"Enter Name"}
             />
           </FormGroup>
           <FormGroup className={"mb-3"}>
