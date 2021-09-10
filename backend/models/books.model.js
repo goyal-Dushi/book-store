@@ -8,7 +8,7 @@ const booksSchema = new mongoose.Schema(
     },
     sellerID: {
       type: "ObjectId",
-      // required : true,
+      required: true,
     },
     sellerName: {
       type: String,
@@ -24,12 +24,14 @@ const booksSchema = new mongoose.Schema(
     stock: {
       type: Number,
       required: true,
+      trim: true,
     },
     soldOn: {
       type: Date,
     },
     price: {
       type: Number,
+      trim: true,
     },
   },
   {
