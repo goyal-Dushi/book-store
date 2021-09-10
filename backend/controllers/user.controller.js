@@ -35,10 +35,11 @@ const user_register = (req, res) => {
             .status(400)
             .json({ msg: "Not able to register user!", error: err });
         } else {
-          // console.log("user after saving: ", user);
-          res.status(200).json({
-            msg: "Successfully Registered " + user?.name,
-            data: user,
+          res.status(201).json({
+            msg:
+              "Successfully Registered " +
+              user?.name +
+              ". Please Log in to Continue!",
             status: true,
           });
         }
@@ -49,24 +50,30 @@ const user_register = (req, res) => {
 
 const user_login = (req, res) => {
   req.session.isAuth = true;
-  // console.log("req.session:user_login ", req.session);
-  res.status(200).json({
+  res.status(201).json({
     msg: "User login successful!",
     status: true,
-    data: req.session.passport.user,
   });
+};
+
+const check_user_login = (req, res) => {
+  console.log("Check user login: ", req?.session);
+  if (req.session?.isAuth) {
+    res.status(200).json({ loggedIn: true, data: req.session?.passport?.user });
+  } else {
+    res.status(401).json({ loggedIn: false });
+  }
 };
 
 const user_logout = (req, res) => {
   req.session.isAuth = false;
   req.logout();
-  // console.log("req.session in logout: ", req.session);
   res.status(200).json({ msg: "User logged out!" });
 };
 
 const get_user_profile = (req, res) => {
   console.log("get user, session: ", req.session);
-  res.send(req?.user);
+  res.status(200).send(req?.user);
 };
 
 module.exports = {
@@ -75,4 +82,5 @@ module.exports = {
   user_login,
   user_logout,
   get_user_profile,
+  check_user_login,
 };
