@@ -21,11 +21,9 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   boughtList: {
-    // type: [Book.schema],
     type: Array,
   },
   soldList: {
-    // type: [Book.schema],
     type: Array,
   },
   isSeller: {
