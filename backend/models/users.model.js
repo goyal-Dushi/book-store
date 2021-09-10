@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Book = require("./books.model");
+// const Book = require("./books.model");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -21,10 +21,12 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   boughtList: {
-    type: [Book.schema],
+    // type: [Book.schema],
+    type: Array,
   },
   soldList: {
-    type: [Book.schema],
+    // type: [Book.schema],
+    type: Array,
   },
   isSeller: {
     type: Boolean,
