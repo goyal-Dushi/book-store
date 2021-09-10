@@ -9,7 +9,7 @@ router.route("/checkout/:id").put((req, res) => {
   books.forEach((book) => {
     Book.updateOne({ _id: book._id }, { $set: { ...book } }, (err) => {
       if (err) {
-        res.status(403).json({ msg: "Unable to update book's details" });
+        res.status(500).json({ msg: "Unable to update book's details" });
       }
     });
     User.updateOne(
@@ -18,7 +18,7 @@ router.route("/checkout/:id").put((req, res) => {
       (err) => {
         if (err) {
           res
-            .status(403)
+            .status(500)
             .json({ msg: "Unable to update Sold list details!", error: err });
         }
       }
@@ -27,7 +27,7 @@ router.route("/checkout/:id").put((req, res) => {
   User.updateOne({ _id: custID }, { $push: { boughtList: books } }, (err) => {
     if (err) {
       res
-        .status(400)
+        .status(500)
         .json({ msg: "Unable to update cliend history", error: err });
     } else {
       res.status(200).json({ msg: "Books successfully set for Delivery!" });
