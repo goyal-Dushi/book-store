@@ -12,40 +12,43 @@ const getAll_users = (req, res) => {
 };
 
 const user_register = (req, res) => {
-  User.findOne({ name: req.body.name }, async (err, data) => {
-    if (err) {
-      res.status(400).json({ msg: "Error Registering!", error: err });
-    } else if (data?._id) {
-      res.status(200).json({
-        msg: "Looks like user already Registered! Try Loggin in!",
-        status: false,
-      });
-    } else {
-      const hashPwd = await bcrypt.hash(req.body.password, 8);
-      const newUser = new User({
-        ...req.body,
-        password: hashPwd,
-        boughtList: [],
-        soldList: [],
-      });
-      newUser.save((err, user) => {
-        if (err) {
-          console.log("error user: ", err);
-          res
-            .status(400)
-            .json({ msg: "Not able to register user!", error: err });
-        } else {
-          res.status(201).json({
-            msg:
-              "Successfully Registered " +
-              user?.name +
-              ". Please Log in to Continue!",
-            status: true,
-          });
-        }
-      });
+  User.findOne(
+    { $or: [{ name: req.body.name }, { email: req.body.email }] },
+    async (err, data) => {
+      if (err) {
+        res.status(400).json({ msg: "Error Registering!", error: err });
+      } else if (data?._id) {
+        res.status(200).json({
+          msg: "Looks like user already Registered with same username or email! Try Loggin in or register with another username & email!",
+          status: false,
+        });
+      } else {
+        const hashPwd = await bcrypt.hash(req.body.password, 8);
+        const newUser = new User({
+          ...req.body,
+          password: hashPwd,
+          boughtList: [],
+          soldList: [],
+        });
+        newUser.save((err, user) => {
+          if (err) {
+            console.log("error user: ", err);
+            res
+              .status(400)
+              .json({ msg: "Not able to register user!", error: err });
+          } else {
+            res.status(201).json({
+              msg:
+                "Successfully Registered " +
+                user?.name +
+                ". Please Log in to Continue!",
+              status: true,
+            });
+          }
+        });
+      }
     }
-  });
+  );
 };
 
 const user_login = (req, res) => {
@@ -57,9 +60,11 @@ const user_login = (req, res) => {
 };
 
 const check_user_login = (req, res) => {
-  console.log("Check user login: ", req?.session);
+  console.log("check_user_login: ", req.session);
   if (req.session?.isAuth) {
-    res.status(200).json({ loggedIn: true, data: req.session?.passport?.user });
+    User.findById(req.session?.passport?.user, (err, data) => {
+      res.status(200).json({ loggedIn: true, data: data });
+    });
   } else {
     res.status(401).json({ loggedIn: false });
   }
@@ -72,8 +77,9 @@ const user_logout = (req, res) => {
 };
 
 const get_user_profile = (req, res) => {
-  console.log("get user, session: ", req.session);
-  res.status(200).send(req?.user);
+  User.findById(req.session?.passport?.user, (err, data) => {
+    res.status(200).json({ data: data });
+  });
 };
 
 module.exports = {
