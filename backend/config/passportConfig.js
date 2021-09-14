@@ -13,12 +13,9 @@ module.exports = function (passport) {
           return done(null, false);
         }
         bcrypt.compare(password, data.password, (err, result) => {
-          console.log("Error in bcrypt compare: ", err);
-          console.log("result in bcrypt compare: ", result);
           if (err) {
             throw err;
           } else if (result) {
-            console.log("Bcrypt compare result: ", result);
             return done(null, data);
           } else {
             return done(null, false);
@@ -29,11 +26,9 @@ module.exports = function (passport) {
   );
 
   passport.serializeUser((user, cb) => {
-    console.log("Serialize user: ", user);
-    cb(null, user);
+    cb(null, user._id);
   });
   passport.deserializeUser((id, cb) => {
-    console.log("Deseialize user: ", id);
     User.findOne({ _id: id }, (err, data) => {
       cb(err, data);
     });
