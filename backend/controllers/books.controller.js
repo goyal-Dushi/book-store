@@ -63,10 +63,22 @@ const get_books_by_seller = (req, res) => {
   });
 };
 
+const get_particular_book = (req, res) => {
+  const id = req.params.id;
+  Book.findOne({ _id: id }, (err, data) => {
+    if (err) {
+      res.json({ msg: "Book not found" });
+    } else {
+      res.status(200).json({ data });
+    }
+  });
+};
+
 module.exports = {
   add_book,
   edit_book,
   delete_book,
   getAll_books,
   get_books_by_seller,
+  get_particular_book,
 };
