@@ -5,7 +5,9 @@ This is a **`MERN`** stack application currenty featuring the basic functionalit
 
 
 
-https://user-images.githubusercontent.com/40212568/131800665-30d883a2-2757-4583-a474-b4c74867b92d.mp4
+https://user-images.githubusercontent.com/40212568/133466859-c8aa804d-dd08-441a-8670-a9588d8cf2f4.mp4
+
+
 
 
 ## Don't just fork the repo , do leave a ⭐
