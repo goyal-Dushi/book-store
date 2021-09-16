@@ -11,7 +11,6 @@ import {
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { AlertContext } from "./contexts/alertContext";
-import { UserDetailsContext } from "./contexts/userContext";
 
 const initialState = {
   name: "",
@@ -24,9 +23,7 @@ const initialState = {
 function UserForms(props) {
   const [userDetail, setUserDetail] = useState(initialState);
   const history = useHistory();
-
   const { setAlertState } = useContext(AlertContext);
-  const { setUserData } = useContext(UserDetailsContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,8 +55,11 @@ function UserForms(props) {
     setUserDetail(initialState);
     if (res?.status) {
       setAlertState({ show: true, type: "success", msg: res?.msg });
-      setUserData(res?.data);
-      history.push("/profile");
+      if (props?.type === "register") {
+        history.push("/login");
+      } else {
+        history.push("/profile");
+      }
     } else {
       setAlertState({ show: true, type: "danger", msg: res?.msg });
     }
