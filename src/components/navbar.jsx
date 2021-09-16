@@ -1,14 +1,15 @@
 import { Navbar, Container, Nav, Button } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { Link, NavLink, useHistory } from "react-router-dom";
 import axios from "axios";
 import { AlertContext } from "./contexts/alertContext";
-import { useContext } from "react";
+import { useContext, memo } from "react";
 import { UserDetailsContext } from "./contexts/userContext";
 
 function AppNavbar() {
   const history = useHistory();
   const { setAlertState } = useContext(AlertContext);
-  const { uid, setUID } = useContext(UserDetailsContext);
+  const { setUserData, userData } = useContext(UserDetailsContext);
+  console.log("navbar userData: ", userData);
   const handleLogout = async () => {
     const res = await axios
       .get("http://localhost:5000/users/logout", { withCredentials: true })
@@ -18,16 +19,22 @@ function AppNavbar() {
       });
     console.log(res);
     setAlertState({ show: true, msg: res?.msg, type: "warning" });
-    setUID("");
+    setUserData({});
     history.push("/");
   };
 
   return (
     <Navbar bg='light' variant='light'>
       <Container>
-        <Navbar.Brand href='#'> {"BookStore"} </Navbar.Brand>
+        <Navbar.Brand>
+          <NavLink
+            style={{ textDecoration: "none", color: "inherit" }}
+            to={"/"}>
+            {"BookStore"}
+          </NavLink>
+        </Navbar.Brand>
         <Nav>
-          {uid ? (
+          {userData?._id ? (
             <>
               <Nav.Link>
                 <Button
@@ -62,4 +69,4 @@ function AppNavbar() {
   );
 }
 
-export default AppNavbar;
+export default memo(AppNavbar);
