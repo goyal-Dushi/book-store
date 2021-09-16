@@ -60,7 +60,6 @@ const user_login = (req, res) => {
 };
 
 const check_user_login = (req, res) => {
-  console.log("check_user_login: ", req.session);
   if (req.session?.isAuth) {
     User.findById(req.session?.passport?.user, (err, data) => {
       res.status(200).json({ loggedIn: true, data: data });
