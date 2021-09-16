@@ -1,6 +1,7 @@
 import { FormGroup, FormLabel, FormControl, Button } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { AlertContext } from "../components/contexts/alertContext";
 
 const initialState = {
   name: "",
@@ -11,6 +12,7 @@ const initialState = {
 
 function BookForm(props) {
   const [editBookDetail, setEditBookDetail] = useState(initialState);
+  const { setAlertState } = useContext(AlertContext);
 
   useEffect(() => {
     if (props?.type === "edit") {
@@ -31,6 +33,17 @@ function BookForm(props) {
           console.log("Error book edit: ", err);
         });
       console.log(response);
+      const index = props.booksBySeller.findIndex(
+        (book) => book?._id === editBookDetail?._id
+      );
+      const editedBookObj = {
+        ...editBookDetail,
+        sellerName: props?.sellerName,
+        sellerAddress: props?.sellerAddress,
+        sellerID: props?.sellerID,
+      };
+      props.booksBySeller.splice(index, 1, editedBookObj);
+      props.setBooks([...props.booksBySeller]);
     } else {
       console.log("While adding editBookDetail: ", editBookDetail);
       const newBookObj = {
@@ -46,8 +59,22 @@ function BookForm(props) {
           console.log("Error adding book: ", err);
         });
       console.log(response);
+      props.setBooks([...props.booksBySeller, newBookObj]);
     }
     props.setPopup({ status: false, type: "" });
+    if (props?.type === "add") {
+      setAlertState({
+        show: true,
+        type: "success",
+        msg: "Added book successfully!",
+      });
+    } else if (props?.type === "edit") {
+      setAlertState({
+        show: true,
+        type: "info",
+        msg: "Edited book successfully!",
+      });
+    }
   };
 
   return (
@@ -69,7 +96,7 @@ function BookForm(props) {
               ? props?.sellerName
               : editBookDetail?.sellerName
           }
-          disabled={props?.type === "add" ? true : false}
+          disabled={true}
           onChange={(e) =>
             setEditBookDetail({ ...editBookDetail, sellerName: e.target.value })
           }
@@ -83,7 +110,7 @@ function BookForm(props) {
               ? props?.sellerAddress
               : editBookDetail?.sellerAddress
           }
-          disabled={props?.type === "add" ? true : false}
+          disabled={true}
           onChange={(e) =>
             setEditBookDetail({
               ...editBookDetail,
