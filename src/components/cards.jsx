@@ -42,7 +42,7 @@ function Cards(props) {
       <Card style={{ width: "18rem" }}>
         <Card.Header>{props.name}</Card.Header>
         <Card.Body>
-          <Card.Title>{props.sellerName}</Card.Title>
+          <Card.Title>{"Sold by: " + props.sellerName}</Card.Title>
           <Card.Text>{"Seller Address: " + props.sellerAddress}</Card.Text>
           <Card.Text>{"Receiving Address: " + props?.address}</Card.Text>
           <Card.Text>{"Price: " + props?.price}</Card.Text>
@@ -55,9 +55,10 @@ function Cards(props) {
       <Card style={{ width: "18rem" }}>
         <Card.Header>{props.name}</Card.Header>
         <Card.Body>
-          <Card.Title>{props.sellerName}</Card.Title>
-          <Card.Text>{"Seller Address: " + props.sellerAddress}</Card.Text>
-          {/* <Card.Text>{"Receiving Address: " + props?.address}</Card.Text> */}
+          <Card.Title>{"Bought By: " + props?.buyerName}</Card.Title>
+          <Card.Text>{"Buyer Address: " + props.address}</Card.Text>
+          <Card.Text>{"Seller Name: " + props.sellerName}</Card.Text>
+          <Card.Text>{"Seller Address: " + props?.sellerAddress}</Card.Text>
           <Card.Text>{"Price: " + props?.price}</Card.Text>
           <Card.Text>{"Sold On: " + props?.soldOn?.slice(0, 10)}</Card.Text>
         </Card.Body>
