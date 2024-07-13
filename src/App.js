@@ -6,14 +6,16 @@ import UserProfile from "./pages/UserProfile";
 import BookList from "./pages/BookList";
 import Checkout from "./pages/Checkout";
 import Home from "./pages/Home";
-import Alert from "./components/alert";
-import AlertContextBox from "./components/contexts/alertContext";
+import Alert from "./components/AppAlert";
 import AppNavbar from "./components/navbar";
+import AlertContextWrapper from "./contexts/AlertContextWrapper";
+import UserContextWrapper from "./contexts/UserContextWrapper";
 
 function App() {
   return (
     <>
-      <AlertContextBox>
+    <UserContextWrapper>
+      <AlertContextWrapper>
         <Router>
           <AppNavbar />
           <Container fluid={"md"}>
@@ -28,7 +30,8 @@ function App() {
             </Switch>
           </Container>
         </Router>
-      </AlertContextBox>
+      </AlertContextWrapper>
+      </UserContextWrapper>
     </>
   );
 }

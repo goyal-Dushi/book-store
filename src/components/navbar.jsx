@@ -7,7 +7,7 @@ import { UserDetailsContext } from "./contexts/userContext";
 
 function AppNavbar() {
   const history = useHistory();
-  const { setAlertState } = useContext(AlertContext);
+  const { dispatchAlert } = useContext(AlertContext);
   const { setUserData, userData } = useContext(UserDetailsContext);
   console.log("navbar userData: ", userData);
   const handleLogout = async () => {
@@ -18,7 +18,7 @@ function AppNavbar() {
         console.log("Error logging out: ", err);
       });
     console.log(res);
-    setAlertState({ show: true, msg: res?.msg, type: "warning" });
+    dispatchAlert({ show: true, msg: res?.msg, type: "warning" });
     setUserData({});
     history.push("/");
   };

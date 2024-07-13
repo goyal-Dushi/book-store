@@ -4,10 +4,10 @@ const bcrypt = require("bcryptjs");
 const getAll_users = (req, res) => {
   User.find((err, data) => {
     if (err) {
-      res.status(400).json({ msg: "Not able to get all users" });
-    } else {
-      res.status(200).json({ data });
+      return res.status(400).json({ msg: "Not able to get all users" });
     }
+
+    return res.status(200).json({ data });
   });
 };
 

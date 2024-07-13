@@ -1,24 +1,39 @@
-const Book = require("../models/books.model");
+const Book = require('../models/books.model');
 
-const add_book = (req, res) => {
+const add_book = async (req, res) => {
   const bookDetails = req.body;
-  Book.create(bookDetails, (err) => {
-    if (err) {
-      res.status(400).json({ msg: "Not able to add book!", error: err });
-    } else {
-      res.status(201).json({ msg: "Book added successfully" });
-    }
-  });
+  await Book.create(bookDetails)
+    .then(() => {
+      return res
+        .status(201)
+        .json({ msg: `Book ${bookDetails.name} successfully added!` });
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        msg: `Not able to add book ${bookDetails.name}, ${err} occurred!`,
+      });
+    });
 };
 
 const edit_book = (req, res) => {
   const editData = req.body;
   const id = req.params.id;
-  Book.updateOne({ _id: id }, { $set: { ...editData } }, (err) => {
+
+  if (!editData || !id) {
+    console.error(`Edit data: ${editData}, id: ${id}`);
+    res
+      .status(400)
+      .json({ msg: 'Failed to updated Book data. Please try again later!' });
+  }
+
+  Book.updateOne({ _id }, { $set: { ...editData } }, (err) => {
     if (err) {
-      res.status(400).json({ msg: "Book update error", error: err });
+      console.error('Edit book controller: ', err);
+      res.status(400).json({
+        msg: 'Unfortunately, book cannot be updated right now. Please try again later!',
+      });
     } else {
-      res.status(201).json({ msg: "Book details updated Successfully!" });
+      res.status(201).json({ msg: 'Book details updated Successfully!' });
     }
   });
 };
@@ -28,7 +43,7 @@ const delete_book = (req, res) => {
 
   Book.findByIdAndDelete(id, (err, data) => {
     if (err) {
-      res.status(402).json({ msg: "Book delete Error", error: err });
+      res.status(402).json({ msg: 'Book delete Error', error: err });
     } else {
       res.status(200).json({ msg: `Successfully removed ${data.name}` });
     }
@@ -38,7 +53,7 @@ const delete_book = (req, res) => {
 const getAll_books = (req, res) => {
   Book.find((err, data) => {
     if (err) {
-      res.status(400).json({ msg: "Not able to find books", error: err });
+      res.status(400).json({ msg: 'Not able to find books', error: err });
     } else {
       res.status(200).json({ data });
     }
@@ -67,7 +82,7 @@ const get_particular_book = (req, res) => {
   const id = req.params.id;
   Book.findOne({ _id: id }, (err, data) => {
     if (err) {
-      res.json({ msg: "Book not found" });
+      res.json({ msg: 'Book not found' });
     } else {
       res.status(200).json({ data });
     }

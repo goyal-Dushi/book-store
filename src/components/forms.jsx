@@ -23,7 +23,7 @@ const initialState = {
 function UserForms(props) {
   const [userDetail, setUserDetail] = useState(initialState);
   const history = useHistory();
-  const { setAlertState } = useContext(AlertContext);
+  const { dispatchAlert } = useContext(AlertContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,14 +54,14 @@ function UserForms(props) {
     console.log("login detail: ", res);
     setUserDetail(initialState);
     if (res?.status) {
-      setAlertState({ show: true, type: "success", msg: res?.msg });
+      dispatchAlert({ show: true, type: "success", msg: res?.msg });
       if (props?.type === "register") {
         history.push("/login");
       } else {
         history.push("/profile");
       }
     } else {
-      setAlertState({ show: true, type: "danger", msg: res?.msg });
+      dispatchAlert({ show: true, type: "danger", msg: res?.msg });
     }
     return;
   };

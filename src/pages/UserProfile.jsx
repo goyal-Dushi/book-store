@@ -15,7 +15,7 @@ const containerStyle = {
 };
 
 function ProfilePage() {
-  const { setAlertState } = useContext(AlertContext);
+  const { dispatchAlert } = useContext(AlertContext);
   const { userData, setUserData } = useContext(UserDetailsContext);
   const [booksBySeller, setBooksBySeller] = useState([]);
   const history = useHistory();
@@ -70,7 +70,7 @@ function ProfilePage() {
     const index = items.findIndex((item) => item?._id === book?._id);
     items.splice(index, 1);
     setBooksBySeller([...items]);
-    setAlertState({
+    dispatchAlert({
       show: true,
       type: "info",
       msg: "Deleted Book Successfully!",
