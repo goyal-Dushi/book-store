@@ -1,13 +1,16 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import UserContext from "./components/contexts/userContext";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
+import App from './App';
+import AlertContextWrapper from './contexts/AlertContextWrapper';
+import UserContextWrapper from './contexts/UserContextWrapper';
 
 ReactDOM.render(
-  <UserContext>
-    <App />
-  </UserContext>,
-  document.getElementById("root")
+  <AlertContextWrapper>
+    <UserContextWrapper>
+      <App />
+    </UserContextWrapper>
+  </AlertContextWrapper>,
+  document.getElementById('root')
 );
