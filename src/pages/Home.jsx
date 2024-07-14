@@ -11,7 +11,7 @@ function Home() {
     <>
       <h3 className={"display-4 mb-3"}>{"Welcome user to online BookStore"}</h3>
       <Container
-        style={{ display: "flex", justifyContent: "space-evenly" }}
+       className="d-flex justify-content-evenly"
         fluid={"sm"}>
         <Link to={"/login"} style={{ textDecoration: "none" }}>
           <Button variant={"outline-success"}> {"Login"} </Button>

@@ -26,25 +26,23 @@ function Checkout() {
 
   // removing books from list
   const handleRemove = (index) => {
-    let items = [...booksDetails.list];
+    const items = [...booksDetails.list];
     items.splice(index, 1);
     const total = items.reduce((acc, book) => {
       return (acc += book?.price);
     }, 0);
+
     setBooksDetails({ total: total, list: [...items] });
   };
 
   useEffect(() => {
-    const getUserProfile = async () => {
-      const userInfo = await axios
-        .get('http://localhost:5000/users/login', { withCredentials: true })
-        .then((res) => res.data)
-        .catch((err) => {
-          console.log('Error: ', err);
-        });
-      setUserData(userInfo?.data);
-    };
-    getUserProfile();
+    const user = window.localstorage.getItem('user');
+    if(!user){
+      history.push('/login');
+      return;
+    }
+
+    setUserData(user);
   }, []);
 
   useEffect(() => {
@@ -53,6 +51,7 @@ function Checkout() {
       const total = books.reduce((acc, book) => {
         return (acc += book?.price);
       }, 0);
+
       setBooksDetails({
         total: total,
         list: [...books],
@@ -61,31 +60,40 @@ function Checkout() {
   }, [location?.state?.bookList]);
 
   const handleCheckout = async () => {
-    if (booksDetails.list?.length) {
-      const newList = booksDetails.list?.map((book) => {
-        let newStock = book?.stock;
-        newStock -= 1;
-        return {
-          ...book,
-          stock: newStock,
-          soldOn: new Date().toDateString(),
-          boughtBy: userData?.name,
-          address: userData?.address,
-        };
-      });
-      const response = await axios
-        .put('http://localhost:5000/checkout/' + userData?._id, newList, {
-          withCredentials: true,
-        })
-        .then((res) => res.data)
-        .catch((err) => {
-          console.log('Error Book Checkout: ', err);
+    try{
+     
+        const newList = booksDetails.list?.map((book) => {
+          let newStock = book?.stock;
+          newStock -= 1;
+  
+          return {
+            ...book,
+            stock: newStock,
+            soldOn: new Date().toDateString(),
+            boughtBy: userData?.name,
+            address: userData?.address,
+          };
         });
-      setBooksDetails({ total: 0, list: '' });
-      dispatchAlert({ type: 'success', show: true, msg: response?.msg });
-      history.replace('/profile');
+        
+        if(!newList?.length){
+          return;
+        }
+        
+        const response = await axios
+          .put('http://localhost:5000/checkout/' + userData?._id, newList, {
+            withCredentials: true,
+          })
+          .then((res) => res.data)
+          .catch((err) => {
+            console.log('Error Book Checkout: ', err);
+          });
+
+        setBooksDetails({ total: 0, list: '' });
+        dispatchAlert({ type: 'success', show: true, msg: response?.msg });
+        history.replace('/profile');
+    }catch(err){
+
     }
-    return;
   };
 
   if (!userData?._id) {
@@ -95,35 +103,35 @@ function Checkout() {
   return (
     <>
       <h5 className={'display-5 mb-3'}> {'Buy & Checkout'} </h5>
-      <Container fluid={'md'} style={{ ...flexEvenlyCenter, flexWrap: 'wrap' }}>
+      <Container fluid={'md'} className="d-flex flex-wrap justify-content-evenly align-items-center">
         {booksDetails?.list?.length ? (
           booksDetails?.list?.map((book, i) => (
             <Card key={i}>
               <Card.Body>
                 <Cards type={'book'} bookData={book} />
               </Card.Body>
-              <div style={{ ...flexEvenlyCenter }}>
+              <div className='d-flex align-items-center justify-content-evenly'>
                 <Button
                   onClick={() => handleRemove(i)}
                   variant={'outline-danger'}
                 >
-                  {'Remove'}
+                  Remove
                 </Button>
               </div>
             </Card>
           ))
         ) : (
-          <h3 className={'display-4 mt-2 mb-2'}>{'No books bought Yet!'}</h3>
+          <h3 className={'display-4 mt-2 mb-2'}>No books bought Yet!</h3>
         )}
         <footer style={{ ...footerStyle }}>
           {booksDetails?.list?.length ? (
-            <Container style={{ ...flexEvenlyCenter }} fluid={'md'}>
+            <Container className="d-flex align-items-center justify-content-evenly" fluid={'md'}>
               <div> {`Total: ${booksDetails.total}`} </div>
               <Button
                 onClick={() => handleCheckout()}
                 variant={'outline-success'}
               >
-                {'Buy & Pay'}
+                Buy & Pay
               </Button>
             </Container>
           ) : null}

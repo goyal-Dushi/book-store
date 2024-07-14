@@ -16,7 +16,10 @@ module.exports = function (passport) {
           if (err) {
             throw err;
           } else if (result) {
-            return done(null, data);
+            const resObj = {...data};
+            delete resObj.password;
+            
+            return done(null, resObj);
           } else {
             return done(null, false);
           }
@@ -26,7 +29,7 @@ module.exports = function (passport) {
   );
 
   passport.serializeUser((user, cb) => {
-    cb(null, user._id);
+    cb(null, user);
   });
   passport.deserializeUser((id, cb) => {
     User.findOne({ _id: id }, (err, data) => {

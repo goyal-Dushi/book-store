@@ -17,10 +17,13 @@ export const UserAPI = {
 
     return response.data;
   },
-  login: async function () {
+  login: async function (data) {
     const response = await api.request({
       url: '/users/logout',
       method: 'GET',
+      body: {
+        ...data,
+      }
     });
 
     return response.data;

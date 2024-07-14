@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const booksSchema = new mongoose.Schema(
   {
     name: {
-      type: 'String',
+      type: "String",
       required: true,
     },
     sellerID: {
-      type: 'ObjectId',
-      required: false,
+      type: "ObjectId",
+      required: true,
     },
     sellerName: {
       type: String,
@@ -28,7 +28,6 @@ const booksSchema = new mongoose.Schema(
     },
     soldOn: {
       type: Date,
-      required: false,
     },
     price: {
       type: Number,
@@ -40,6 +39,6 @@ const booksSchema = new mongoose.Schema(
   }
 );
 
-const Book = mongoose.model('Book', booksSchema);
+const Book = mongoose.model("Book", booksSchema);
 
 module.exports = Book;

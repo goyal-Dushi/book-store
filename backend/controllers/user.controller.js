@@ -37,12 +37,16 @@ const user_register = (req, res) => {
               .status(400)
               .json({ msg: "Not able to register user!", error: err });
           } else {
+            const resData = {...user};
+            delete resData.password;
+
             res.status(201).json({
               msg:
                 "Successfully Registered " +
                 user?.name +
                 ". Please Log in to Continue!",
               status: true,
+              data: resData,
             });
           }
         });

@@ -1,36 +1,22 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
-import axios from 'axios';
 import { AlertContext } from '../../contexts/AlertContextWrapper';
-
-const initialState = {
-  _id: '',
-  name: '',
-  isAvailable: true,
-  stock: '',
-  price: '',
-};
+import { BooksAPI } from '../../api';
 
 function EditBookForm(props) {
-  const { type, bookData, booksBySeller, sellerData, setBooks, setPopup } = props;
+  const { bookData, booksBySeller, setBooks, setPopup } = props;
+  const [editBookDetail, setEditBookDetail] = useState(bookData);
+  const { dispatchAlert } = useContext(AlertContext);
 
   if (!bookData || !Object.keys(bookData).length) {
     return null;
   }
 
-  const [editBookDetail, setEditBookDetail] = useState(bookData);
-  const { dispatchAlert } = useContext(AlertContext);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios
-        .patch(
-          'http://localhost:5000/books/edit',
-          editBookDetail
-        )
-        .then((res) => res.data);
+      const response = await BooksAPI.editBook(editBookDetail, editBookDetail._id);
 
       const index = booksBySeller.findIndex(
         (book) => book?._id === editBookDetail?._id
@@ -41,17 +27,24 @@ function EditBookForm(props) {
         sellerAddress,
         sellerID,
       };
-      booksBySeller.splice(index, 1, editedBookObj);
-      setBooks([...props.booksBySeller]);
+      
+      const updatedBooksBySeller = [...booksBySeller];
+      updatedBooksBySeller.splice(index, 1, editedBookObj);
+      setBooks([...updatedBooksBySeller]);
       setPopup({ status: false, type: '' });
 
       dispatchAlert({
         show: true,
         type: 'success',
-        msg: 'Edited book successfully!',
+        msg: response.msg,
       });
     } catch (err) {
       console.error(err);
+      dispatchAlert({
+        show: true,
+        type: 'success',
+        msg: err.msg || 'Failure occured while editing book details!',
+      });
     }
   };
 
