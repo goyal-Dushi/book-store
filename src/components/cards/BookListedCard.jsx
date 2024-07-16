@@ -1,7 +1,16 @@
-import { Card } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 
 function BookListedCard(props) {
-  const { name, sellerName, sellerAddress, price, stock } = props;
+  const { bookData, onEdit, onDelete } = props;
+  const { name, price, stock, sellerName, sellerAddress } = bookData;
+
+  const handleEditBook = () => {
+    onEdit(bookData);
+  };
+
+  const handleDeleteBook = () => {
+    onDelete(bookData);
+  };
 
   return (
     <Card style={{ width: '18rem' }}>
@@ -12,6 +21,18 @@ function BookListedCard(props) {
         <Card.Text>{'Price: ' + price}</Card.Text>
         <Card.Text> {'Stock: ' + stock} </Card.Text>
       </Card.Body>
+      <Card.Footer>
+        <Button onClick={handleEditBook} variant={'warning'}>
+          Edit
+        </Button>
+        <Button
+          onClick={handleDeleteBook}
+          className={'ml-2'}
+          variant={'outline-danger'}
+        >
+          Delete
+        </Button>
+      </Card.Footer>
     </Card>
   );
 }

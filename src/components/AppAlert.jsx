@@ -11,7 +11,7 @@ function AppAlert() {
 
   return (
     <Alert onClose={() => dispatchAlert()} variant={state.type || 'info'}>
-      <p className={`alert alert-${state.type}`}>{state.msg}</p>
+      <p className={`alert alert-${state.type || 'info'}`}>{state.msg}</p>
     </Alert>
   );
 }
