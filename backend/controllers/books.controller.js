@@ -1,63 +1,113 @@
+const mongoose = require('mongoose');
 const Book = require('../models/books.model');
+const ApiError = require('../utils/ApiError');
+const ApiResponse = require('../utils/ApiResponse');
 
-const add_book = async (req, res) => {
+const add_book = async (req, res, next) => {
   const bookDetails = req.body;
-  await Book.create(bookDetails)
-    .then(() => {
-      return res
-        .status(201)
-        .json({ msg: `Book ${bookDetails.name} successfully added!` });
-    })
-    .catch((err) => {
-      return res.status(400).json({
-        msg: `Not able to add book ${bookDetails.name}, ${err} occurred!`,
-      });
-    });
+
+  try {
+    await Book.create(bookDetails);
+    res.status(201).json(
+      new ApiResponse({
+        statusCode: 201,
+        message: `Book ${bookDetails.name} successfully added!`,
+      })
+    );
+  } catch (err) {
+    next(
+      new ApiError({
+        statusCode: 400,
+        errors: err.errors,
+        message: `Not able to add book ${bookDetails.name}, ${err} occurred!`,
+      })
+    );
+  }
 };
 
-const edit_book = (req, res) => {
+const edit_book = async (req, res, next) => {
   const editData = req.body;
   const id = req.params.id;
 
-  if (!editData || !id) {
-    console.error(`Edit data: ${editData}, id: ${id}`);
-    res
-      .status(400)
-      .json({ msg: 'Failed to updated Book data. Please try again later!' });
+  console.log('edit data: ', editData);
+
+  if (!editData || !Object.keys(editData).length || !id) {
+    return next(
+      new ApiError({
+        statusCode: 400,
+        message: 'Failed to updated Book data. Please try again later!',
+      })
+    );
   }
 
-  Book.updateOne({ _id }, { $set: { ...editData } }, (err) => {
-    if (err) {
-      console.error('Edit book controller: ', err);
-      res.status(400).json({
-        msg: 'Unfortunately, book cannot be updated right now. Please try again later!',
-      });
-    } else {
-      res.status(201).json({ msg: 'Book details updated Successfully!' });
-    }
-  });
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(
+      new ApiError({
+        statusCode: 400,
+        message: 'Invalid book ID!',
+      })
+    );
+  }
+
+  try {
+    await Book.updateOne({ _id: id }, { $set: { ...editData } });
+    res.status(201).json(
+      new ApiResponse({
+        statusCode: 201,
+        message: 'Book details updated Successfully!',
+      })
+    );
+  } catch (err) {
+    next(
+      new ApiError({
+        statusCode: 400,
+        errors: err,
+        message:
+          'Unfortunately, book cannot be updated right now. Please try again later!',
+      })
+    );
+  }
 };
 
-const delete_book = (req, res) => {
+const delete_book = async (req, res, next) => {
   const id = req.params.id;
 
-  Book.findByIdAndDelete(id, (err, data) => {
-    if (err) {
-      res.status(402).json({ msg: 'Book delete Error', error: err });
-    } else {
-      res.status(200).json({ msg: `Successfully removed ${data.name}` });
-    }
-  });
+  try {
+    await Book.findByIdAndDelete(id);
+    res
+      .status(402)
+      .json(new ApiResponse({ message: `Successfully removed ${data.name}` }));
+  } catch (err) {
+    next(
+      new ApiError({
+        statusCode: 402,
+        message: 'Book delete Error',
+        errors: err.errors,
+      })
+    );
+  }
 };
 
-const getAll_books = (req, res) => {
-  Book.find((err, data) => {
-    if (err) {
-      res.status(400).json({ msg: 'Not able to find books', error: err });
-    } else {
-      res.status(200).json({ data });
-    }
-  });
+const getAll_books = async (req, res, next) => {
+  try {
+    const books = await Book.find();
+    res.status(200).json(
+      new ApiResponse({
+        statusCode: 200,
+        message: 'All books being returned!',
+        data: books,
+      })
+    );
+  } catch (err) {
+    next(
+      new ApiError({
+        stack: err.stack,
+        statusCode: 400,
+        message: 'Not able to fetch all the books',
+        errors: err,
+      })
+    );
+  }
 };
 
 const get_books_by_seller = (req, res) => {
@@ -78,15 +128,21 @@ const get_books_by_seller = (req, res) => {
   });
 };
 
-const get_particular_book = (req, res) => {
+const get_particular_book = async (req, res, next) => {
   const id = req.params.id;
-  Book.findOne({ _id: id }, (err, data) => {
-    if (err) {
-      res.json({ msg: 'Book not found' });
-    } else {
-      res.status(200).json({ data });
-    }
-  });
+  await Book.findOne({ _id: id })
+    .then((data) => {
+      res.status(200).json(new ApiResponse({ data }));
+    })
+    .catch((err) => {
+      next(
+        new ApiError({
+          statusCode: 400,
+          message: 'Book not found',
+          errors: err,
+        })
+      );
+    });
 };
 
 module.exports = {

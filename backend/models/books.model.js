@@ -16,20 +16,17 @@ const booksSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    isAvailable: {
-      type: Boolean,
-    },
     stock: {
       type: Number,
       required: true,
-      trim: true,
+      min: 0,
     },
     soldOn: {
       type: Date,
     },
     price: {
       type: Number,
-      trim: true,
+      required: true,
       max: 100000,
       min: 10,
     },
