@@ -7,6 +7,7 @@ class ApiError extends Error {
     type = 'danger',
   }) {
     super(message);
+
     this.message = message;
     this.statusCode = statusCode;
     this.errors = errors;
@@ -21,4 +22,4 @@ class ApiError extends Error {
   }
 }
 
-export default ApiError;
+module.exports = ApiError;
