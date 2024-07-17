@@ -6,6 +6,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const PORT = 5000;
+const middlewares = require('./middlewares/index');
 const UserRouter = require('./routes/users.routes');
 const BooksRouter = require('./routes/books.routes');
 const CheckoutRouter = require('./routes/checkout.routes');
@@ -66,6 +67,8 @@ app.get('/', (req, res) => {
 app.use('/books', BooksRouter);
 app.use('/users', UserRouter);
 app.use(CheckoutRouter);
+
+app.use(middlewares.errorMiddleware);
 
 app.listen(PORT, () => {
   console.log('Server started on Port: ', PORT);
