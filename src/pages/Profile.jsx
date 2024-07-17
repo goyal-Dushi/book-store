@@ -7,7 +7,7 @@ import UserProfile from '../components/profiles/UserProfile';
 
 function Profile() {
   const { dispatchAlert } = useContext(AlertContext);
-  const { userData, setUserData } = useContext(null);
+  const [userData, setUserData] = useState(null);
   const [inventoryData, setInventoryData] = useState([]);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ function Profile() {
         dispatchAlert({ show: true, msg: err.message, type: err.type });
       }
     })();
-  }, [userData]);
+  }, []);
 
   if (!userData || !inventoryData) {
     return null;

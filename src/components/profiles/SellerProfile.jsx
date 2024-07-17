@@ -2,17 +2,19 @@ import { useContext, useState } from 'react';
 import { BooksAPI } from '../../api';
 import BookListedCard from '../cards/BookListedCard';
 import BookSoldCard from '../cards/BookSoldCard';
-import BoughtBookCard from '../cards/BoughBookCard';
 import ProfileCard from '../cards/ProfileCard';
 import { AlertContext } from '../../contexts';
 import EditBookForm from '../bookForms/EditBookForm';
+import AddBookForm from '../bookForms/AddBookForm';
 
 function SellerProfile(props) {
   const { sellerData, inventoryData } = props;
   const { name, _id } = sellerData;
   const { bookList, soldList } = inventoryData;
+  const [booksBySeller, setBooksBySeller] = useState(bookList);
   const { dispatchAlert } = useContext(AlertContext);
   const [editBookData, setEditBookData] = useState(null);
+  const [showAddBookDialog, setShowAddBookDialog] = useState(false);
 
   if (!sellerData || !_id) {
     return null;
@@ -28,6 +30,10 @@ function SellerProfile(props) {
           msg: response.message,
         });
       }
+
+      setBooksBySeller((prev) => {
+        return prev.filter((prevBook) => prevBook._id !== book._id);
+      });
     } catch (err) {
       dispatchAlert({
         show: true,
@@ -47,6 +53,14 @@ function SellerProfile(props) {
           msg: response.message,
         });
       }
+
+      const updatedBookList = [...booksBySeller];
+      const editBookIdx = booksBySeller.findIndex(
+        (item) => item._id === book._id
+      );
+      updatedBookList.splice(editBookIdx, 1, book);
+
+      setBooksBySeller(updatedBookList);
     } catch (err) {
       dispatchAlert({
         show: true,
@@ -61,7 +75,13 @@ function SellerProfile(props) {
       if (prev) {
         return null;
       }
-      return { ...book, ...sellerData };
+      return { ...book, sellerData };
+    });
+  };
+
+  const handleAddBook = () => {
+    setShowAddBookDialog((prev) => {
+      return !prev;
     });
   };
 
@@ -69,10 +89,7 @@ function SellerProfile(props) {
     <>
       <h4 className={'display-4 mb-3'}>{'Welcome ' + name}</h4>
       <ProfileCard userData={sellerData} />
-      <Button
-        onClick={() => setModalOpen({ type: 'add', status: true })}
-        variant={'outline-success'}
-      >
+      <Button onClick={handleAddBook} variant={'outline-success'}>
         Add Books
       </Button>
 
@@ -96,11 +113,11 @@ function SellerProfile(props) {
           <h3 className={'display-5 mb-2'}> {'No Books Sold yet!'} </h3>
         )}
       </Container>
-      {!!bookList?.length ? (
+      {!!booksBySeller?.length ? (
         <Container className={'mt-2'} fluid={'md'}>
           <h3 className={'display-5 mb-2 mt-3'}> Books Listed By You </h3>
           <Container fluid={'md'} style={{ ...containerStyle }}>
-            {bookList?.map((book, i) => {
+            {booksBySeller?.map((book, i) => {
               return (
                 <BookListedCard
                   key={book.name}
@@ -117,7 +134,14 @@ function SellerProfile(props) {
         <Button variant={'outline-primary'}> Checkout Products </Button>
       </Link>
       {editBookData ? (
-        <EditBookForm data={editBookData} onEditBook={onBookEditSubmit} />
+        <EditBookForm
+          data={editBookData}
+          onCancel={handleBookEdit}
+          onEditBook={onBookEditSubmit}
+        />
+      ) : null}
+      {showAddBookDialog ? (
+        <AddBookForm onAddBook={handleAddBook} sellerData={sellerData} />
       ) : null}
     </>
   );

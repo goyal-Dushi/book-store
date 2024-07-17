@@ -1,51 +1,23 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { FormGroup, FormLabel, FormControl, Button } from 'react-bootstrap';
-import { AlertContext } from '../../contexts/AlertContextWrapper';
-import { BooksAPI } from '../../api';
 
 function EditBookForm(props) {
-  const { bookData, booksBySeller, setBooks, setPopup } = props;
-  const [editBookDetail, setEditBookDetail] = useState(bookData);
-  const { dispatchAlert } = useContext(AlertContext);
+  const { data, onEditBook, onCancel } = props;
+  const { sellerData, ...restProps } = data;
+  const [editBookDetail, setEditBookDetail] = useState(restProps);
 
-  if (!bookData || !Object.keys(bookData).length) {
+  if (!editBookDetail || !Object.keys(editBookDetail).length) {
     return null;
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    try {
-      const response = await BooksAPI.editBook(editBookDetail, editBookDetail._id);
+    onEditBook(editBookDetail);
+  };
 
-      const index = booksBySeller.findIndex(
-        (book) => book?._id === editBookDetail?._id
-      );
-      const editedBookObj = {
-        ...editBookDetail,
-        sellerName,
-        sellerAddress,
-        sellerID,
-      };
-      
-      const updatedBooksBySeller = [...booksBySeller];
-      updatedBooksBySeller.splice(index, 1, editedBookObj);
-      setBooks([...updatedBooksBySeller]);
-      setPopup({ status: false, type: '' });
-
-      dispatchAlert({
-        show: true,
-        type: 'success',
-        msg: response.msg,
-      });
-    } catch (err) {
-      console.error(err);
-      dispatchAlert({
-        show: true,
-        type: 'success',
-        msg: err.msg || 'Failure occured while editing book details!',
-      });
-    }
+  const handleCancel = () => {
+    onCancel();
   };
 
   return (
@@ -62,19 +34,11 @@ function EditBookForm(props) {
         </FormGroup>
         <FormGroup>
           <FormLabel>Seller Name</FormLabel>
-          <FormControl value={editBookDetail?.sellerName} disabled={true} />
+          <FormControl value={editBookDetail?.sellerName} disabled />
         </FormGroup>
         <FormGroup>
           <FormLabel>Seller Address</FormLabel>
-          <FormControl
-            value={editBookDetail?.sellerAddress}
-            onChange={(e) =>
-              setEditBookDetail({
-                ...editBookDetail,
-                sellerAddress: e.target.value,
-              })
-            }
-          />
+          <FormControl value={editBookDetail?.sellerAddress} disabled />
         </FormGroup>
         <FormGroup>
           <FormLabel>Stock</FormLabel>
@@ -110,7 +74,7 @@ function EditBookForm(props) {
         <Button
           variant={'outline-dark'}
           className={'ml-3'}
-          onClick={() => props.setPopup({ status: false, type: '' })}
+          onClick={handleCancel}
         >
           Close
         </Button>

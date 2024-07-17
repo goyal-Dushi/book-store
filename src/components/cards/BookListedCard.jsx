@@ -2,7 +2,8 @@ import { Button, Card } from 'react-bootstrap';
 
 function BookListedCard(props) {
   const { bookData, onEdit, onDelete } = props;
-  const { name, price, stock, sellerName, sellerAddress } = bookData;
+  const { name, price, stock, seller } = bookData;
+  const { sellerName, sellerAddress } = seller;
 
   const handleEditBook = () => {
     onEdit(bookData);

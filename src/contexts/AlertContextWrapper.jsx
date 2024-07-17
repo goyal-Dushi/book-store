@@ -14,7 +14,7 @@ function alertReducer(state = initialState, action) {
         type: action.type,
         show: true,
       };
-    case 'error':
+    case 'danger':
       return {
         ...state,
         type: action.type,

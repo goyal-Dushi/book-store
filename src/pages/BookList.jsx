@@ -4,24 +4,24 @@ import { Link } from 'react-router-dom';
 import { BookCard } from '../components/cards';
 import { useDebounce } from '../hooks/useDebounce';
 import { BooksAPI, UserAPI } from '../api';
-import { AlertContext, UserDetailsContext } from '../contexts';
+import { AlertContext } from '../contexts';
+import { UserUtil } from '../utils';
 
 function BookList() {
   const [books, setBooks] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [search, setSearch] = useState('');
   const { dispatchAlert } = useContext(AlertContext);
-  const { userData, setUserData } = useContext(UserDetailsContext);
   const debounce = useDebounce();
 
   useEffect(() => {
     (async () => {
       try {
+        const user = new UserUtil();
         const books = await BooksAPI.getAll();
-        const userInfo = await UserAPI.get(userData?._id);
 
         setBooks(books);
-        setUserData(userInfo);
+        setUserData(user.getUserData());
       } catch (err) {
         dispatchAlert({ type: 'warning', msg: err.data.msg, show: true });
       }
