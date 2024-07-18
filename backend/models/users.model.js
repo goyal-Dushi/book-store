@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const { Schema } = mongoose;
 
@@ -12,19 +13,14 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       required: true,
       minLength: [3, 'Username too short!'],
-      maxLength: [30, 'Username too long!'],
+      maxLength: [40, 'Username too long!'],
     },
     password: {
       type: String,
       trim: true,
       required: true,
       minLength: [4, 'Password length too short!'],
-      maxLength: [21, 'Password length too long!'],
-    },
-    email: {
-      type: String,
-      required: true,
-      trim: true,
+      maxLength: [200, 'Password length too long!'],
     },
     address: {
       type: String,
@@ -94,6 +90,25 @@ UserSchema.pre('save', async function (next) {
 
 UserSchema.methods.isPasswordCorrect = async function (password) {
   return bcrypt.compare(password, this.password);
+};
+
+UserSchema.methods.generateAccessToken = function () {
+  const jwtPayload = {
+    id: this._id,
+    username: this.username,
+    role: this.role,
+  };
+
+  return jwt.sign(jwtPayload, process.env.ACCESS_TOKEN_PRIVATE_KEY);
+};
+
+UserSchema.methods.generateRefreshToken = function () {
+  const jwtPayload = {
+    username: this.username,
+    id: this._id,
+  };
+
+  return jwt.sign(jwtPayload, process.env.REFRESH_TOKEN_PRIVATE_KEY);
 };
 
 const User = mongoose.model('User', UserSchema);
