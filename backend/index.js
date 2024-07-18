@@ -60,9 +60,7 @@ db.once('open', () => {
   console.log('Database connection established!');
 });
 
-app.get('/', (req, res) => {
-  res.send('Home page, Check console!');
-});
+app.use(middlewares.apiCheckMiddleware);
 
 app.use('/books', BooksRouter);
 app.use('/users', UserRouter);
