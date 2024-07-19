@@ -27,11 +27,12 @@ export const BooksAPI = {
 
     return response.data;
   },
-  addBook: async function (bookData) {
+  addBook: async function (bookData, id) {
     const response = await api.request({
       url: '/books/add',
       body: {
-        bookDetails: bookData,
+        bookData,
+        id,
       },
       method: 'POST',
     });
@@ -49,10 +50,13 @@ export const BooksAPI = {
 
     return response.data;
   },
-  delete: async function (id) {
+  delete: async function (bookId, id) {
     const response = await api.request({
-      url: `/books/delete/${id}`,
+      url: `/books/delete/${bookId}`,
       method: 'DELETE',
+      body: {
+        userId: id,
+      },
     });
 
     return response.data;

@@ -9,6 +9,14 @@ export const UserAPI = {
 
     return response.data;
   },
+  getInventory: async function (id) {
+    const response = await api.request({
+      url: `/users/inventory/${id}`,
+      method: 'GET',
+    });
+
+    return response.data;
+  },
   login: async function () {
     const response = await api.request({
       url: '/users/login',
@@ -17,13 +25,13 @@ export const UserAPI = {
 
     return response.data;
   },
-  login: async function (data) {
+  logout: async function (data) {
     const response = await api.request({
       url: '/users/logout',
-      method: 'GET',
+      method: 'POST',
       body: {
         ...data,
-      }
+      },
     });
 
     return response.data;

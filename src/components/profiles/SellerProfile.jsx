@@ -20,7 +20,13 @@ function SellerProfile(props) {
     return null;
   }
 
-  const handleBookDelete = async (book) => {
+  const handleAddBook = () => {
+    setShowAddBookDialog((prev) => {
+      return !prev;
+    });
+  };
+
+  const onBookAddSubmit = async (book) => {
     try {
       const response = await BooksAPI.addBook(book, _id);
       if (response.message) {
@@ -70,18 +76,37 @@ function SellerProfile(props) {
     }
   };
 
+  const handleBookDelete = async (book) => {
+    try {
+      const response = await BooksAPI.delete(book._id, _id);
+      if (response.message) {
+        dispatchAlert({
+          show: true,
+          type: response.type,
+          msg: response.message,
+        });
+      }
+
+      const updatedBookList = booksBySeller.filter(
+        (item) => item._id !== book._id
+      );
+
+      setBooksBySeller(updatedBookList);
+    } catch (err) {
+      dispatchAlert({
+        show: true,
+        type: err.type,
+        msg: err.message,
+      });
+    }
+  };
+
   const handleBookEdit = (book) => {
     setEditBookData((prev) => {
       if (prev) {
         return null;
       }
       return { ...book, sellerData };
-    });
-  };
-
-  const handleAddBook = () => {
-    setShowAddBookDialog((prev) => {
-      return !prev;
     });
   };
 
@@ -141,7 +166,11 @@ function SellerProfile(props) {
         />
       ) : null}
       {showAddBookDialog ? (
-        <AddBookForm onAddBook={handleAddBook} sellerData={sellerData} />
+        <AddBookForm
+          onAddBook={onBookAddSubmit}
+          onCancel={handleAddBook}
+          sellerData={sellerData}
+        />
       ) : null}
     </>
   );

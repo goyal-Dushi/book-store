@@ -2,16 +2,29 @@ const mongoose = require('mongoose');
 const Book = require('../models/books.model');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
+const User = require('../models/users.model');
 
 const add_book = async (req, res, next) => {
-  const bookDetails = req.body;
+  const { bookData, id: userId } = req.body;
+
+  console.log(`bookdata: ${bookData}, id: ${userId}`);
 
   try {
-    await Book.create(bookDetails);
+    const user = await User.findOne({ _id: userId });
+    const book = await Book.create(bookData);
+
+    console.log('user data: ', user);
+
+    user.bookList.push(book._id);
+    book.seller = user._id;
+
+    await user.save();
+    await book.save();
+
     res.status(201).json(
       new ApiResponse({
         statusCode: 201,
-        message: `Book ${bookDetails.name} successfully added!`,
+        message: `Book ${bookData.name} successfully added!`,
       })
     );
   } catch (err) {
@@ -19,7 +32,7 @@ const add_book = async (req, res, next) => {
       new ApiError({
         statusCode: 400,
         errors: err.errors,
-        message: `Not able to add book ${bookDetails.name}, ${err} occurred!`,
+        message: `Not able to add book ${bookData.name}, ${err} occurred!`,
       })
     );
   }
@@ -70,12 +83,28 @@ const edit_book = async (req, res, next) => {
 };
 
 const delete_book = async (req, res, next) => {
-  const id = req.params.id;
+  const bookId = req.params.id;
+  const userId = req.body.userId;
+
+  if (!bookId || !userId) {
+    return next(
+      new ApiError({
+        statusCode: 400,
+        message: 'Not enough data to process the request!',
+      })
+    );
+  }
 
   try {
-    await Book.findByIdAndDelete(id);
+    await Book.findByIdAndDelete(bookId);
+
+    const user = await User.findOne({ _id: userId });
+    user.bookList = user.bookList.filter((item) => item.toString() !== bookId);
+
+    await user.save();
+
     res
-      .status(402)
+      .status(204)
       .json(new ApiResponse({ message: `Successfully removed ${data.name}` }));
   } catch (err) {
     next(

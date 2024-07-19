@@ -8,6 +8,7 @@ const passport = require('passport');
 const PORT = 5000;
 const middlewares = require('./middlewares/index');
 const UserRouter = require('./routes/users.routes');
+const userController = require('./controllers/user.controller');
 const BooksRouter = require('./routes/books.routes');
 const CheckoutRouter = require('./routes/checkout.routes');
 
@@ -59,6 +60,9 @@ db.on('error', (err) => {
 db.once('open', () => {
   console.log('Database connection established!');
 });
+
+app.route('/users/register').post(userController.user_register);
+app.route('/users/login').post(userController.user_login);
 
 app.use(middlewares.apiCheckMiddleware);
 

@@ -4,7 +4,7 @@ import { BooksAPI } from '../../api';
 import { AlertContext } from '../../contexts';
 
 function AddBookForm(props) {
-  const { onAddBook, sellerData } = props;
+  const { onAddBook, sellerData, onCancel } = props;
   const [bookDetail, setBookDetail] = useState({});
   const { dispatchAlert } = useContext(AlertContext);
 
@@ -27,7 +27,7 @@ function AddBookForm(props) {
   };
 
   const handleCancel = () => {
-    onAddBook();
+    onCancel();
   };
 
   return (
