@@ -4,6 +4,34 @@ const jwt = require('jsonwebtoken');
 
 const { Schema } = mongoose;
 
+const boughtListSchema = Schema({
+  book: {
+    type: Schema.Types.ObjectId,
+    ref: 'Book',
+  },
+  boughtOn: {
+    type: Date,
+  },
+  seller: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }
+});
+
+const soldListSchema = Schema({
+  book: {
+    type: Schema.Types.ObjectId,
+    ref: 'Book',
+  },
+  soldOn: {
+    type: Date,
+  },
+  buyer: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }
+});
+
 const UserSchema = new mongoose.Schema(
   {
     username: {
@@ -52,18 +80,8 @@ const UserSchema = new mongoose.Schema(
         ref: 'Book',
       },
     ],
-    soldList: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Book',
-      },
-    ],
-    boughtList: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Book',
-      },
-    ],
+    soldList: [soldListSchema],
+    boughtList: [boughtListSchema],
     role: {
       type: String,
       enum: ['user', 'vendor', 'admin'],

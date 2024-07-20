@@ -128,16 +128,6 @@ const user_login = async (req, res, next) => {
   }
 };
 
-const check_user_login = (req, res) => {
-  if (req.session?.isAuth) {
-    User.findById(req.session?.passport?.user, (err, data) => {
-      res.status(200).json({ loggedIn: true, data: data });
-    });
-  } else {
-    res.status(401).json({ loggedIn: false });
-  }
-};
-
 const user_logout = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -186,6 +176,7 @@ const get_user_profile = async (req, res, next) => {
     delete data.password;
     delete data.refreshToken;
 
+
     res.status(200).json(
       new ApiResponse({
         statusCode: 200,
@@ -204,11 +195,63 @@ const get_user_profile = async (req, res, next) => {
   }
 };
 
+const get_user_inventory = async(req, res, next) => {
+  try{
+    const userId = req.params.id;
+    if(!userId){
+      return next(new ApiError({
+        statusCode: 400,
+        message: 'Not able to fetch user details due to insufficient data'
+      }));
+    }
+
+    const user = await User.findOne({ _id: userId });
+    if(!user){
+      return next(new ApiError({
+        statusCode: 400,
+        message: 'User not Found!'
+      }));
+    }
+
+    switch(user.role){
+      case 'user':
+        user.populate({ path: 'boughtList.book', model: 'Book' }).populate({ path: 'boughtList.seller', model: 'User' }).exec();
+        return res.status(200).json(new ApiResponse({
+          data: {
+            boughtList: user.boughtList,
+          },
+          message: `Fetched inventory data for ${user.username}`,
+        }));
+      case 'vendor':
+        user.populate({ path: 'soldList.book', model: 'Book' }).populate({ path: 'bookList.book', model: 'Book' }).populate({ path: 'soldList.buyer', model: 'User' }).exec();
+        return res.status(200).json(new ApiResponse({
+          data: {
+            soldList: user.soldList,
+            bookList: user.bookList,
+          },
+          message: `Fetched inventory data for ${user.username}`,
+        }));
+    }
+
+    next(new ApiError({
+      statusCode: 500,
+      message: 'Admin roles not handled as of now!',
+    }))
+  }catch(err){
+    next(new ApiError({
+      statusCode:400,
+      message: err.message,
+      stack: err.stack,
+      errors: err,
+    }));
+  }
+}
+
 module.exports = {
   getAll_users,
   user_register,
   user_login,
   user_logout,
   get_user_profile,
-  check_user_login,
+  get_user_inventory,
 };
