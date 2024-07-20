@@ -19,7 +19,7 @@ export const UserAPI = {
   },
   login: async function () {
     const response = await api.request({
-      url: '/users/login',
+      url: '/login',
       method: 'POST',
     });
 
@@ -38,7 +38,7 @@ export const UserAPI = {
   },
   register: async function (data) {
     const response = await api.request({
-      url: '/users/register',
+      url: '/register',
       body: {
         ...data,
       },

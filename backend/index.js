@@ -61,14 +61,14 @@ db.once('open', () => {
   console.log('Database connection established!');
 });
 
-app.route('/users/register').post(userController.user_register);
-app.route('/users/login').post(userController.user_login);
+app.route('/register').post(userController.user_register);
+app.route('/login').post(userController.user_login);
 
 app.use(middlewares.apiCheckMiddleware);
 
 app.use('/books', BooksRouter);
 app.use('/users', UserRouter);
-app.use(CheckoutRouter);
+app.use('/checkout', CheckoutRouter);
 
 app.use(middlewares.errorMiddleware);
 
