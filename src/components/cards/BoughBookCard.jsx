@@ -1,8 +1,11 @@
 import { Card } from 'react-bootstrap';
+import { UserUtil } from '../../utils';
 
 function BoughtBookCard(props) {
   const { bookData } = props;
-  const { name, sellerName, sellerAddress, address, price, soldOn } = bookData;
+  const { name, price, soldOn, seller } = bookData;
+  const { username: sellerName, address: sellerAddress, phone_no: mobile } = seller;
+  const user = new UserUtil();
 
   return (
     <Card style={{ width: '18rem' }}>
@@ -10,7 +13,9 @@ function BoughtBookCard(props) {
       <Card.Body>
         <Card.Title>{'Sold by: ' + sellerName}</Card.Title>
         <Card.Text>{'Seller Address: ' + sellerAddress}</Card.Text>
-        <Card.Text>{'Receiving Address: ' + address}</Card.Text>
+        {mobile ? (
+          <Card.Text>{'Seller Phone: ' + mobile}</Card.Text>
+        ): null}
         <Card.Text>{'Price: ' + price}</Card.Text>
         <Card.Text>{'Bought On: ' + soldOn?.slice(0, 10)}</Card.Text>
       </Card.Body>

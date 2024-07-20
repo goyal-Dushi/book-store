@@ -128,7 +128,6 @@ function SellerProfile(props) {
                   <BookSoldCard
                     key={book.name}
                     bookData={book}
-                    sellerData={sellerData}
                   />
                 );
               })}
