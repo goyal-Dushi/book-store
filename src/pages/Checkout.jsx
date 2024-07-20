@@ -1,16 +1,10 @@
-import axios from 'axios';
 import { useEffect, useState, useContext } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
 import { useHistory, useLocation } from 'react-router-dom';
 import Cards from '../components/cards';
 import { AlertContext } from '../components/contexts/alertContext';
-import { UserDetailsContext } from '../components/contexts/userContext';
-
-const flexEvenlyCenter = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-evenly',
-};
+import { UserUtil } from '../utils';
+import { CheckoutAPI } from '../api/checkout.api';
 
 const footerStyle = {
   width: '100%',
@@ -21,7 +15,6 @@ function Checkout() {
   const location = useLocation();
   const [booksDetails, setBooksDetails] = useState({ total: 0, list: [] });
   const { dispatchAlert } = useContext(AlertContext);
-  const { userData, setUserData } = useContext(UserDetailsContext);
   const history = useHistory();
 
   // removing books from list
@@ -32,23 +25,14 @@ function Checkout() {
       return (acc += book?.price);
     }, 0);
 
-    setBooksDetails({ total: total, list: [...items] });
+    setBooksDetails({ total: total, list: items });
   };
 
   useEffect(() => {
-    const user = window.localstorage.getItem('user');
-    if(!user){
-      history.push('/login');
-      return;
-    }
+    const bookList = location?.state?.bookList;
 
-    setUserData(user);
-  }, []);
-
-  useEffect(() => {
-    const books = JSON.parse(location?.state?.bookList);
-    if (books?.length) {
-      const total = books.reduce((acc, book) => {
+    if(bookList){
+      const total = bookList.reduce((acc, book) => {
         return (acc += book?.price);
       }, 0);
 
@@ -60,53 +44,25 @@ function Checkout() {
   }, [location?.state?.bookList]);
 
   const handleCheckout = async () => {
-    try{
-     
-        const newList = booksDetails.list?.map((book) => {
-          let newStock = book?.stock;
-          newStock -= 1;
-  
-          return {
-            ...book,
-            stock: newStock,
-            soldOn: new Date().toDateString(),
-            boughtBy: userData?.name,
-            address: userData?.address,
-          };
-        });
-        
-        if(!newList?.length){
-          return;
-        }
-        
-        const response = await axios
-          .put('http://localhost:5000/checkout/' + userData?._id, newList, {
-            withCredentials: true,
-          })
-          .then((res) => res.data)
-          .catch((err) => {
-            console.log('Error Book Checkout: ', err);
-          });
+    try{   
+        const user = new UserUtil();
+        const response = await CheckoutAPI.buy(booksDetails, user.getUserId());
 
         setBooksDetails({ total: 0, list: '' });
         dispatchAlert({ type: 'success', show: true, msg: response?.msg });
-        history.replace('/profile');
+        history.replace('/booklist');
     }catch(err){
-
+      dispatchAlert({ type: 'danger', show: true, msg: err?.message });
     }
   };
-
-  if (!userData?._id) {
-    return null;
-  }
 
   return (
     <>
       <h5 className={'display-5 mb-3'}> {'Buy & Checkout'} </h5>
       <Container fluid={'md'} className="d-flex flex-wrap justify-content-evenly align-items-center">
-        {booksDetails?.list?.length ? (
-          booksDetails?.list?.map((book, i) => (
-            <Card key={i}>
+        {Boolean(booksDetails?.list?.length) ? (
+          booksDetails.list.map((book, i) => (
+            <Card key={book.name}>
               <Card.Body>
                 <Cards type={'book'} bookData={book} />
               </Card.Body>
@@ -128,7 +84,7 @@ function Checkout() {
             <Container className="d-flex align-items-center justify-content-evenly" fluid={'md'}>
               <div> {`Total: ${booksDetails.total}`} </div>
               <Button
-                onClick={() => handleCheckout()}
+                onClick={handleCheckout}
                 variant={'outline-success'}
               >
                 Buy & Pay

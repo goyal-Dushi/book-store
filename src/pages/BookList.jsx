@@ -3,9 +3,8 @@ import { Container, FormControl, InputGroup, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { BookCard } from '../components/cards';
 import { useDebounce } from '../hooks/useDebounce';
-import { BooksAPI, UserAPI } from '../api';
+import { BooksAPI } from '../api';
 import { AlertContext } from '../contexts';
-import { UserUtil } from '../utils';
 
 function BookList() {
   const [books, setBooks] = useState([]);
@@ -17,11 +16,9 @@ function BookList() {
   useEffect(() => {
     (async () => {
       try {
-        const user = new UserUtil();
         const books = await BooksAPI.getAll();
 
         setBooks(books);
-        setUserData(user.getUserData());
       } catch (err) {
         dispatchAlert({ type: 'warning', msg: err.data.msg, show: true });
       }
@@ -43,10 +40,6 @@ function BookList() {
     }, 800);
   };
 
-  if (!userData?._id) {
-    return null;
-  }
-
   return (
     <>
       <Container
@@ -55,17 +48,16 @@ function BookList() {
       >
         <h4 className={'display-5'}> {'Search for Your Fav books'} </h4>
         <Link
+          className="btn btn-md btn-primary text-decoration-none"
           to={{
             pathname: `/cartCheckout`,
             state: {
               bookList: JSON.stringify(cartItems),
             },
           }}
-          style={{ textDecoration: 'none' }}
         >
-          <Button variant={'dark'}>
-            {`Proceed to checkout : ${cartItems?.length}`}
-          </Button>
+          
+          {`Proceed to checkout : ${cartItems?.length}`}
         </Link>
       </Container>
       <Container fluid={'md'} className={'mt-3'}>
