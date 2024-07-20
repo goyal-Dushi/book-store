@@ -1,8 +1,4 @@
 class UserUtil {
-  constructor(data) {
-    this.data = data;
-  }
-
   getUserData() {
     const userData = window.localStorage.getItem('user');
     if (!userData) {
@@ -18,12 +14,17 @@ class UserUtil {
     return data._id;
   }
 
-  saveDataToLs() {
-    if (!this.data) {
+  getUserRole(){
+    const data = JSON.parse(this.getUserData());
+    return data.role;
+  }
+
+  saveDataToLs(data) {
+    if (!data) {
       return;
     }
 
-    window.localStorage.setItem('user', this.data);
+    window.localStorage.setItem('user', data);
   }
 }
 

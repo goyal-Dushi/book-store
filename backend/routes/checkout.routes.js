@@ -1,38 +1,53 @@
 const express = require("express");
 const router = express.Router();
-const Book = require("../models/books.model");
 const User = require("../models/users.model");
+const ApiError = require("../utils/ApiError");
+const ApiResponse = require("../utils/ApiResponse");
 
-router.route("/checkout/:id").put((req, res) => {
-  const custID = req.params.id;
-  const books = req.body;
-  books.forEach((book) => {
-    Book.updateOne({ _id: book._id }, { $set: { ...book } }, (err) => {
-      if (err) {
-        res.status(500).json({ msg: "Unable to update book's details" });
+router.route("/buy").put(async (req, res, next) => {
+  try{
+    // get the book data, user id, seller id, no of stock bought
+  const { booksdata, userId } = req.body;
+  // check if all 3 are present, else return err
+  if(!booksdata?.length || !userId){  
+    return next(new ApiError({
+      statusCode: 400,
+      message: "Insufficient data, cannot process checkout!"
+    }));
+  }
+  // get data of both book and user from modals
+  const user = await User.findOne({ _id: userId });
+
+  await Promise.all(booksdata.map(async (book) => {
+      const seller = await User.findOne({ _id: book.seller.toString() });
+
+      if (!seller) {
+        next(ApiError({
+          statusCode: 500,
+          message: `Seller not found for book ${book.name}`,
+        }));
       }
-    });
-    User.updateOne(
-      { _id: book.sellerID },
-      { $push: { soldList: book } },
-      (err) => {
-        if (err) {
-          res
-            .status(500)
-            .json({ msg: "Unable to update Sold list details!", error: err });
-        }
-      }
-    );
-  });
-  User.updateOne({ _id: custID }, { $push: { boughtList: books } }, (err) => {
-    if (err) {
-      res
-        .status(500)
-        .json({ msg: "Unable to update cliend history", error: err });
-    } else {
-      res.status(200).json({ msg: "Books successfully set for Delivery!" });
-    }
-  });
+
+      // Update user boughtList and seller soldList with book id and date
+      user.boughtList.push({ book: book._id, boughtOn: new Date(), seller: seller._id });
+      seller.soldList.push({ book: book._id, soldOn: new Date(), buyer: userId });
+
+      await seller.save();
+  }));
+
+    // Save user data after all books are processed
+    await user.save();
+
+    res.status(200).json(new ApiResponse({
+      message: 'Checkout Done successfully!'
+    }));
+  }catch(err){
+    next(new ApiError({
+      statusCode: 400,
+      errors: err,
+      message: err?.message || 'Not able to checkout. Try again later!'
+    }));
+  }
 });
 
 module.exports = router;
