@@ -2,9 +2,10 @@ import { useHistory } from 'react-router-dom';
 import { useContext } from 'react';
 import { AlertContext } from '../contexts';
 import { UserAPI } from '../api';
+import { UserUtil } from '../utils';
 
 const initialState = {
-  name: '',
+  username: '',
   email: '',
   address: '',
   password: '',
@@ -20,8 +21,9 @@ function RegisterPage() {
     e.preventDefault();
     try {
       const response = await UserAPI.register(userDetail);
+      const user = new UserUtil();
 
-      window.localStorage.setItem('user', response.data);
+      user.saveDataToLs(response.data);
       dispatchAlert({ type: 'success', msg: response.message, show: true });
       history.push('/profile');
     } catch (err) {
@@ -66,26 +68,24 @@ function RegisterPage() {
             <select
               className={'form-select'}
               onChange={(e) =>
-                e.target.value === 'seller'
-                  ? setUserDetail({ ...userDetail, isSeller: true })
-                  : setUserDetail({ ...userDetail, isSeller: false })
+                setUserDetail({ ...userDetail, role: e.target.value })
               }
             >
-              <option selected value={'buyer'}>
-                {'User'}
+              <option selected value={'user'}>
+                {'Buyer'}
               </option>
-              <option value={'seller'}> {'Seller'} </option>
+              <option value={'vendor'}> {'Seller'} </option>
             </select>
           </FormGroup>
           <FormGroup className={'mb-3'}>
             <FormLabel>{'Username'}</FormLabel>
             <FormControl
-              value={userDetail?.name}
+              value={userDetail?.username}
               onChange={(e) =>
-                setUserDetail({ ...userDetail, name: e.target.value })
+                setUserDetail({ ...userDetail, username: e.target.value })
               }
               required
-              placeholder={'Enter Name'}
+              placeholder={'Enter Username'}
             />
           </FormGroup>
           <FormGroup className={'mb-3'}>

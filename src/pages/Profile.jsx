@@ -17,7 +17,7 @@ function Profile() {
         const response = await UserAPI.getInventory(user.getUserId());
 
         setInventoryData(response.data);
-        setUserData(user);
+        setUserData(user.getUserData());
       } catch (err) {
         dispatchAlert({ show: true, msg: err.message, type: err.type });
       }
