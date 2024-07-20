@@ -12,17 +12,19 @@ const booksSchema = new mongoose.Schema(
       minLength: [3],
       maxLength: [70],
     },
+    description: {
+      type: String,
+      trim: true,
+      maxLength: [300],
+    },
     seller: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-    },
-    stock: {
-      type: Number,
       required: true,
-      min: 0,
     },
-    soldOn: {
-      type: Date,
+    instock: {
+      type: Boolean,
+      required: true,
     },
     price: {
       type: Number,

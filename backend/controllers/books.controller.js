@@ -7,13 +7,9 @@ const User = require('../models/users.model');
 const add_book = async (req, res, next) => {
   const { bookData, id: userId } = req.body;
 
-  console.log(`bookdata: ${bookData}, id: ${userId}`);
-
   try {
     const user = await User.findOne({ _id: userId });
     const book = await Book.create(bookData);
-
-    console.log('user data: ', user);
 
     user.bookList.push(book._id);
     book.seller = user._id;
@@ -41,8 +37,6 @@ const add_book = async (req, res, next) => {
 const edit_book = async (req, res, next) => {
   const editData = req.body;
   const id = req.params.id;
-
-  console.log('edit data: ', editData);
 
   if (!editData || !Object.keys(editData).length || !id) {
     return next(
@@ -139,22 +133,22 @@ const getAll_books = async (req, res, next) => {
   }
 };
 
-const get_books_by_seller = (req, res) => {
-  const id = req.params.id;
-
-  Book.find({ sellerID: id }, (err, data) => {
-    if (err) {
-      res
-        .status(400)
-        .json({ msg: "Not able to fetch seller's books", error: err });
-    } else if (!data) {
-      res.status(200).json({
-        status: false,
-      });
-    } else {
-      res.status(200).json({ status: true, data: data });
-    }
-  });
+const get_books_by_seller = async (req, res, next) => {
+  try{
+    const id = req.params.id;
+    // get seller bookList details using popuplate
+    const seller = await User.findOne({ _id: id }).populate('bookList').exec();
+    // return all the books
+    res.status(200).json(new ApiResponse({
+      data: seller.bookList,
+      message: `Fetched all books for seller ${seller.username}`,
+    }));
+  }catch(err){
+    next(new ApiError({
+      statusCode: 400,
+      message: 'Not able to fetch books for the seller'
+    }));
+  }
 };
 
 const get_particular_book = async (req, res, next) => {
