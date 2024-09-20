@@ -5,7 +5,6 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-api.interceptors.response.use(_, (err) => {
-  console.error(err);
-  return Promise.reject(err);
+api.interceptors.response.use(undefined, (err) => {
+  return Promise.reject(err.response.data);
 });
