@@ -23,13 +23,17 @@
   },
   "rules": {
     "react-hooks/rules-of-hooks": "error",
+    "react/prop-types": "off",
     "react-hooks/exhaustive-deps": "warn",
     "react/jsx-no-target-blank": "warn",
     "react/prefer-stateless-function": "error",
     "react/self-closing-comp": "error",
     "react/jsx-key": "error",
+    "react/react-in-jsx-scope": "off",
     "no-console": "warn",
+    "no-undef": "error",
     "no-eval": "error",
+    "no-extra-boolean-cast": "off",
     "import/first": "error",
     "prettier/prettier": [
       "error",
