@@ -1,8 +1,9 @@
+const KEY = 'user';
+
 class UserUtil {
   getUserData() {
-    const userData = window.localStorage.getItem('user');
+    const userData = window.localStorage.getItem(KEY);
     if (!userData) {
-      window.location.href = '/login';
       return null;
     }
 
@@ -10,13 +11,13 @@ class UserUtil {
   }
 
   getUserId() {
-    const data = JSON.parse(this.getUserData());
-    return data._id;
+    const data = this.getUserData();
+    return data?._id;
   }
 
-  getUserRole(){
-    const data = JSON.parse(this.getUserData());
-    return data.role;
+  getUserRole() {
+    const data = this.getUserData();
+    return data?.role;
   }
 
   saveDataToLs(data) {
@@ -24,7 +25,11 @@ class UserUtil {
       return;
     }
 
-    window.localStorage.setItem('user', data);
+    window.localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  removeDataFromLs() {
+    window.localStorage.removeItem(KEY);
   }
 }
 

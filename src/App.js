@@ -7,10 +7,20 @@ import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Alert from './components/AppAlert';
-import AppNavbar from './components/navbar';
+import AppNavbar from './components/layout/navbar';
 import Profile from './pages/Profile';
+import { useEffect, useContext } from 'react';
+import { UserDetailsContext } from './contexts';
+import { UserUtil } from './utils';
 
 function App() {
+  const { updateUserDetails } = useContext(UserDetailsContext);
+
+  useEffect(() => {
+    const user = new UserUtil();
+    updateUserDetails({ type: 'update', data: user.getUserData() });
+  }, []);
+
   return (
     <>
       <Router>
