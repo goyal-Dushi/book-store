@@ -20,7 +20,6 @@ const booksSchema = new mongoose.Schema(
     seller: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
     },
     instock: {
       type: Boolean,

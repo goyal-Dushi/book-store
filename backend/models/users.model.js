@@ -14,8 +14,8 @@ const boughtListSchema = Schema({
   },
   seller: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
-  }
+    ref: 'User',
+  },
 });
 
 const soldListSchema = Schema({
@@ -28,8 +28,8 @@ const soldListSchema = Schema({
   },
   buyer: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
-  }
+    ref: 'User',
+  },
 });
 
 const UserSchema = new mongoose.Schema(
@@ -52,14 +52,6 @@ const UserSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      validate: {
-        validator: function (v) {
-          if (this.role === 'vendor') {
-            const stringVal = v.toString();
-            return stringVal.length === 9;
-          }
-        },
-      },
       minLength: [10, 'Address length too short!'],
       maxLength: [70, 'Address too long!'],
     },
