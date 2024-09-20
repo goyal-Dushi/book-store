@@ -9,57 +9,83 @@ const add_book = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ _id: userId });
-    const book = await Book.create(bookData);
+    if (!user) {
+      next(
+        new ApiError({
+          statusCode: 404,
+          message: 'Not able to find the user with given id',
+        })
+      );
+    }
 
-    user.bookList.push(book._id);
-    book.seller = user._id;
+    const book = await Book.create({ ...bookData, seller: userId });
 
+    user.bookList.push(new mongoose.Types.ObjectId(book._id));
     await user.save();
-    await book.save();
 
     res.status(201).json(
       new ApiResponse({
         statusCode: 201,
         message: `Book ${bookData.name} successfully added!`,
+        data: book,
       })
     );
   } catch (err) {
     next(
       new ApiError({
-        statusCode: 400,
+        statusCode: 500,
         errors: err.errors,
-        message: `Not able to add book ${bookData.name}, ${err} occurred!`,
+        message: `Not able to add book ${bookData?.name}, ${err} occurred!`,
       })
     );
   }
 };
 
 const edit_book = async (req, res, next) => {
-  const editData = req.body;
-  const id = req.params.id;
-
-  if (!editData || !Object.keys(editData).length || !id) {
-    return next(
-      new ApiError({
-        statusCode: 400,
-        message: 'Failed to updated Book data. Please try again later!',
-      })
-    );
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(
-      new ApiError({
-        statusCode: 400,
-        message: 'Invalid book ID!',
-      })
-    );
-  }
-
   try {
-    await Book.updateOne({ _id: id }, { $set: { ...editData } });
+    const { editData } = req.body;
+    const id = req.params.id;
+
+    if (!editData || !Object.keys(editData).length || !id) {
+      return next(
+        new ApiError({
+          statusCode: 400,
+          message: 'Failed to updated Book data. Please try again later!',
+        })
+      );
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(
+        new ApiError({
+          statusCode: 400,
+          message: 'Invalid book ID!',
+        })
+      );
+    }
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      id,
+      { ...editData },
+      {
+        new: true,
+        upsert: true,
+        runValidators: true,
+      }
+    ).lean();
+
+    if (!updatedBook) {
+      return next(
+        new ApiError({
+          statusCode: 404,
+          message: 'Book not found!',
+        })
+      );
+    }
+
     res.status(201).json(
       new ApiResponse({
+        data: updatedBook,
         statusCode: 201,
         message: 'Book details updated Successfully!',
       })
@@ -67,7 +93,7 @@ const edit_book = async (req, res, next) => {
   } catch (err) {
     next(
       new ApiError({
-        statusCode: 400,
+        statusCode: 500,
         errors: err,
         message:
           'Unfortunately, book cannot be updated right now. Please try again later!',
@@ -77,19 +103,19 @@ const edit_book = async (req, res, next) => {
 };
 
 const delete_book = async (req, res, next) => {
-  const bookId = req.params.id;
-  const userId = req.body.userId;
-
-  if (!bookId || !userId) {
-    return next(
-      new ApiError({
-        statusCode: 400,
-        message: 'Not enough data to process the request!',
-      })
-    );
-  }
-
   try {
+    const bookId = req.params.id;
+    const userId = req.body.userId;
+
+    if (!bookId || !userId) {
+      return next(
+        new ApiError({
+          statusCode: 400,
+          message: 'Not enough data to process the request!',
+        })
+      );
+    }
+
     await Book.findByIdAndDelete(bookId);
 
     const user = await User.findOne({ _id: userId });
@@ -99,11 +125,12 @@ const delete_book = async (req, res, next) => {
 
     res
       .status(204)
-      .json(new ApiResponse({ message: `Successfully removed ${data.name}` }));
+      .json(new ApiResponse({ message: 'Successfully removed book' }));
   } catch (err) {
+    console.error(err);
     next(
       new ApiError({
-        statusCode: 402,
+        statusCode: 401,
         message: 'Book delete Error',
         errors: err.errors,
       })
@@ -134,20 +161,24 @@ const getAll_books = async (req, res, next) => {
 };
 
 const get_books_by_seller = async (req, res, next) => {
-  try{
+  try {
     const id = req.params.id;
     // get seller bookList details using popuplate
     const seller = await User.findOne({ _id: id }).populate('bookList').exec();
     // return all the books
-    res.status(200).json(new ApiResponse({
-      data: seller.bookList,
-      message: `Fetched all books for seller ${seller.username}`,
-    }));
-  }catch(err){
-    next(new ApiError({
-      statusCode: 400,
-      message: 'Not able to fetch books for the seller'
-    }));
+    res.status(200).json(
+      new ApiResponse({
+        data: seller.bookList,
+        message: `Fetched all books for seller ${seller.username}`,
+      })
+    );
+  } catch (err) {
+    next(
+      new ApiError({
+        statusCode: 400,
+        message: 'Not able to fetch books for the seller',
+      })
+    );
   }
 };
 
