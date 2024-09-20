@@ -22,17 +22,17 @@ app.use(
   })
 );
 
-app.use(
-  session({
-    secret: 'somesecrestofBookstore@123%78237dfnisn',
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+// app.use(
+//   session({
+//     secret: 'somesecrestofBookstore@123%78237dfnisn',
+//     resave: false,
+//     saveUninitialized: true,
+//   })
+// );
 
 app.use(cookieParser());
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 const mongoURI = 'mongodb://127.0.0.1:27017/bookStore';
 
