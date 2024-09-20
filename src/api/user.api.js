@@ -1,9 +1,11 @@
 import { api } from '../config/axios.config';
 
+const BASE_URL = '/users';
+
 export const UserAPI = {
   get: async function (id) {
     const response = await api.request({
-      url: `/users/profile/${id}`,
+      url: `${BASE_URL}/profile/${id}`,
       method: 'GET',
     });
 
@@ -11,25 +13,28 @@ export const UserAPI = {
   },
   getInventory: async function (id) {
     const response = await api.request({
-      url: `/users/inventory/${id}`,
+      url: `${BASE_URL}/inventory/${id}`,
       method: 'GET',
     });
 
     return response.data;
   },
-  login: async function () {
+  login: async function (data) {
     const response = await api.request({
       url: '/login',
       method: 'POST',
+      data: {
+        ...data,
+      },
     });
 
     return response.data;
   },
   logout: async function (data) {
     const response = await api.request({
-      url: '/users/logout',
+      url: `${BASE_URL}/logout`,
       method: 'POST',
-      body: {
+      data: {
         ...data,
       },
     });
@@ -39,7 +44,7 @@ export const UserAPI = {
   register: async function (data) {
     const response = await api.request({
       url: '/register',
-      body: {
+      data: {
         ...data,
       },
       method: 'POST',

@@ -1,10 +1,12 @@
 import { api } from '../config/axios.config';
 
+const BASE_URL = '/books';
+
 export const BooksAPI = {
   // getting all books
   getAll: async function () {
     const response = await api.request({
-      url: '/books',
+      url: BASE_URL,
       method: 'GET',
     });
 
@@ -12,7 +14,7 @@ export const BooksAPI = {
   },
   getBooksBySeller: async function (sellerId) {
     const response = await api.request({
-      url: `/books/getbook/${sellerId}`,
+      url: `${BASE_URL}/getbook/${sellerId}`,
       method: 'GET',
     });
 
@@ -21,7 +23,7 @@ export const BooksAPI = {
   // get book by id
   get: async function (id) {
     const response = await api.request({
-      url: `/books/getbook/${id}`,
+      url: `${BASE_URL}/getbook/${id}`,
       method: 'GET',
     });
 
@@ -29,8 +31,8 @@ export const BooksAPI = {
   },
   addBook: async function (bookData, id) {
     const response = await api.request({
-      url: '/books/add',
-      body: {
+      url: `${BASE_URL}/add`,
+      data: {
         bookData,
         id,
       },
@@ -41,8 +43,8 @@ export const BooksAPI = {
   },
   editBook: async function (editData, id) {
     const response = await api.request({
-      url: `/books/edit/${id}`,
-      body: {
+      url: `${BASE_URL}/edit/${id}`,
+      data: {
         editData,
       },
       method: 'PATCH',
@@ -52,9 +54,9 @@ export const BooksAPI = {
   },
   delete: async function (bookId, id) {
     const response = await api.request({
-      url: `/books/delete/${bookId}`,
+      url: `${BASE_URL}/delete/${bookId}`,
       method: 'DELETE',
-      body: {
+      data: {
         userId: id,
       },
     });
