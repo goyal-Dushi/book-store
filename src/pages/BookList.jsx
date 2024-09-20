@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Container, FormControl, InputGroup, Button } from 'react-bootstrap';
+import { Container, FormControl, InputGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { BookCard } from '../components/cards';
 import { useDebounce } from '../hooks/useDebounce';
@@ -9,18 +9,18 @@ import { AlertContext } from '../contexts';
 function BookList() {
   const [books, setBooks] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [search, setSearch] = useState('');
-  const { dispatchAlert } = useContext(AlertContext);
+  const [search, setSearch] = useState(null);
+  const { alertWarning } = useContext(AlertContext);
   const debounce = useDebounce();
 
   useEffect(() => {
     (async () => {
       try {
-        const books = await BooksAPI.getAll();
+        const response = await BooksAPI.getAll();
 
-        setBooks(books);
+        setBooks(response.data);
       } catch (err) {
-        dispatchAlert({ type: 'warning', msg: err.data.msg, show: true });
+        alertWarning(err.message);
       }
     })();
     document.title = 'All Books!';
@@ -37,7 +37,7 @@ function BookList() {
 
     debounce(() => {
       setSearch(value);
-    }, 800);
+    }, 500);
   };
 
   return (
@@ -56,7 +56,6 @@ function BookList() {
             },
           }}
         >
-          
           {`Proceed to checkout : ${cartItems?.length}`}
         </Link>
       </Container>
@@ -70,21 +69,26 @@ function BookList() {
         </InputGroup>
 
         <Container className="d-flex align-items-center justify-content-evenly flex-wrap">
-          {books?.map((book, i) => {
-            if (!book.name.toLowerCase().includes(search.toLowerCase())) {
-              return null;
-            }
+          {!!books?.length ? (
+            books?.map((book) => {
+              // if (
+              //   search &&
+              //   !book.name.toLowerCase().includes(search.toLowerCase())
+              // ) {
+              //   return null;
+              // }
 
-            return (
-              <BookCard
-                key={book.name}
-                bookData={book}
-                addToCart={true}
-                cartItems={cartItems}
-                onAddToCart={handleAddToCart}
-              />
-            );
-          })}
+              return (
+                <BookCard
+                  key={book.name}
+                  bookData={book}
+                  onAddToCart={handleAddToCart}
+                />
+              );
+            })
+          ) : (
+            <> No Books to Display! </>
+          )}
         </Container>
       </Container>
     </>

@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
-import { AlertContext } from '../components/contexts/alertContext';
+import { AlertContext } from '../contexts';
 import { UserAPI } from '../api';
 import { UserUtil } from '../utils';
 import SellerProfile from '../components/profiles/SellerProfile';
 import UserProfile from '../components/profiles/UserProfile';
 
 function Profile() {
-  const { dispatchAlert } = useContext(AlertContext);
+  const { alertError } = useContext(AlertContext);
   const [userData, setUserData] = useState(null);
   const [inventoryData, setInventoryData] = useState([]);
 
@@ -19,7 +19,7 @@ function Profile() {
         setInventoryData(response.data);
         setUserData(user.getUserData());
       } catch (err) {
-        dispatchAlert({ show: true, msg: err.message, type: err.type });
+        alertError(err.message);
       }
     })();
   }, []);

@@ -1,25 +1,22 @@
-import { useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 function Home() {
   useEffect(() => {
-    document.title = "Welcome!";
+    document.title = 'Welcome!';
   }, []);
 
   return (
     <>
-      <h3 className={"display-4 mb-3"}>{"Welcome user to online BookStore"}</h3>
-      <Container
-       className="d-flex justify-content-evenly"
-        fluid={"sm"}>
-        <Link to={"/login"} style={{ textDecoration: "none" }}>
-          <Button variant={"outline-success"}> {"Login"} </Button>
+      <h3 className={'display-4 mb-3'}>{'Welcome user to online BookStore'}</h3>
+      <div>
+        <Link className="btn btn-md btn-primary-outline" to="/login">
+          Login
         </Link>
-        <Link to={"/register"} style={{ textDecoration: "none" }}>
-          <Button variant={"outline-primary"}> {"Register"} </Button>
+        <Link className="btn btn-md btn-outline-secondary" to="/register">
+          Register
         </Link>
-      </Container>
+      </div>
     </>
   );
 }
