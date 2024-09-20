@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, Button } from 'react-bootstrap';
 
-function BookCard(props) {
-  const { bookData, onAddToCart } = props;
+function CheckoutCard(props) {
+  const { bookData, onProductRemove } = props;
   const { name, seller, instock, price, description } = bookData;
   // const { username: sellerName, address: sellerAddress } = seller;
 
-  const handleAddToCart = () => {
-    onAddToCart(bookData);
+  const handleRemove = () => {
+    onProductRemove();
   };
 
   return (
@@ -17,16 +17,14 @@ function BookCard(props) {
         <span>{instock ? 'In Stock' : 'Out of Stock'}</span>
       </Card.Header>
       <Card.Body>
-        {/* <Card.Title>{sellerName}</Card.Title> */}
-        {/* <Card.Text>{'Seller Address: ' + sellerAddress}</Card.Text> */}
-        <Card.Text>{'Price: ' + price}</Card.Text>
+        <Card.Subtitle>{'Price: ' + price}</Card.Subtitle>
         <Card.Text>{description}</Card.Text>
-        <Button onClick={handleAddToCart} variant={'outline-primary'}>
-          Add to Cart
+        <Button onClick={handleRemove} variant={'outline-danger'}>
+          Remove
         </Button>
       </Card.Body>
     </Card>
   );
 }
 
-export default BookCard;
+export default CheckoutCard;

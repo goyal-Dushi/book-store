@@ -1,12 +1,26 @@
 import { useState, useContext } from 'react';
-import { FormGroup, FormLabel, FormControl, Modal } from 'react-bootstrap';
+import {
+  FormGroup,
+  FormLabel,
+  FormControl,
+  FormCheck,
+  Modal,
+  Button,
+} from 'react-bootstrap';
 import { BooksAPI } from '../../api';
 import { AlertContext } from '../../contexts';
 
+const DEF_STATE = {
+  name: '',
+  description: '',
+  instock: true,
+  price: null,
+};
+
 function AddBookForm(props) {
   const { onAddBook, sellerData, onCancel } = props;
-  const [bookDetail, setBookDetail] = useState({});
-  const { dispatchAlert } = useContext(AlertContext);
+  const [bookDetail, setBookDetail] = useState(DEF_STATE);
+  const { alertSuccess, alertError } = useContext(AlertContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,14 +29,10 @@ function AddBookForm(props) {
       const { _id: sellerID } = sellerData;
 
       const response = await BooksAPI.addBook(bookDetail, sellerID);
-      dispatchAlert({ show: true, type: response.type, msg: response.message });
+      alertSuccess(response.message);
       onAddBook();
     } catch (err) {
-      dispatchAlert({
-        type: err?.type,
-        msg: err.message,
-        show: true,
-      });
+      alertError(err.message);
     }
   };
 
@@ -31,7 +41,7 @@ function AddBookForm(props) {
   };
 
   return (
-    <Modal className="p-3" show>
+    <Modal className="p-3" centered backdrop="static" show>
       <Modal.Header>Add Book</Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit}>
@@ -46,16 +56,13 @@ function AddBookForm(props) {
             />
           </FormGroup>
           <FormGroup>
-            <FormLabel>{'Stock'}</FormLabel>
+            <FormLabel>Description</FormLabel>
             <FormControl
-              value={bookDetail?.stock}
-              type={'number'}
+              value={bookDetail?.description}
               required
+              as="textarea"
               onChange={(e) =>
-                setBookDetail({
-                  ...bookDetail,
-                  stock: e.target.value,
-                })
+                setBookDetail({ ...bookDetail, description: e.target.value })
               }
             />
           </FormGroup>
@@ -63,14 +70,28 @@ function AddBookForm(props) {
             <FormLabel>{'Price'}</FormLabel>
             <FormControl
               value={bookDetail?.price}
-              type={'number'}
+              type="number"
               required
               onChange={(e) =>
                 setBookDetail({
                   ...bookDetail,
-                  price: e.target.value,
+                  price: +e.target.value,
                 })
               }
+            />
+          </FormGroup>
+          <FormGroup className="mt-2">
+            <FormCheck
+              defaultChecked
+              type="checkbox"
+              onChange={(e) =>
+                setBookDetail({
+                  ...bookDetail,
+                  instock: e.target.checked,
+                })
+              }
+              name="instock"
+              label={'In Stock'}
             />
           </FormGroup>
           <Button type={'submit'} className={'mt-2'} variant={'primary'}>
