@@ -1,2 +1,4 @@
-export * from './AlertContextWrapper';
-export * from './UserContextWrapper';
+import { AlertContext } from './AlertContextWrapper.jsx';
+import { UserDetailsContext } from './UserContextWrapper.jsx';
+
+export { AlertContext, UserDetailsContext };
