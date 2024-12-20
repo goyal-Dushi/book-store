@@ -2,9 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const passport = require('passport');
 const PORT = 5000;
 const middlewares = require('./middlewares/index');
 const UserRouter = require('./routes/users.routes');
@@ -22,19 +20,8 @@ app.use(
   })
 );
 
-// app.use(
-//   session({
-//     secret: 'somesecrestofBookstore@123%78237dfnisn',
-//     resave: false,
-//     saveUninitialized: true,
-//   })
-// );
-
 app.use(cookieParser());
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-const mongoURI = 'mongodb://127.0.0.1:27017/bookStore';
+const mongoURI = process.env.MONGO_URI;
 
 (() => {
   try {
