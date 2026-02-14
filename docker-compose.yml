@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: plant-ecommerce-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: bookStore
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - plant-ecommerce-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: plant-ecommerce-backend
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      MONGODB_URI: mongodb://mongodb:27017/bookStore
+      SESSION_SECRET: somesecrestofBookstore@123%78237dfnisn
+      CORS_ORIGIN: http://localhost
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - plant-ecommerce-network
+
+  # Frontend React App
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plant-ecommerce-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - plant-ecommerce-network
+
+# Named volumes for persistent data
+volumes:
+  mongodb_data:
+    driver: local
+
+# Custom network for service communication
+networks:
+  plant-ecommerce-network:
+    driver: bridge

@@ -1,0 +1,10 @@
+{
+    "error": {
+        "title": "Error",
+        "message": "An error occurred, Please try again later."
+    }, 
+    "success": {
+        "title": "Success",
+        "message": "Operation was successful."
+    }
+}

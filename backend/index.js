@@ -1,10 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const UserRouter = require("./routes/users.routes");
 const BooksRouter = require("./routes/books.routes");
 const CheckoutRouter = require("./routes/checkout.routes");
@@ -14,14 +15,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
     credentials: true,
   })
 );
 
 app.use(
   session({
-    secret: "somesecrestofBookstore@123%78237dfnisn",
+    secret: process.env.SESSION_SECRET || "somesecrestofBookstore@123%78237dfnisn",
     resave: false,
     saveUninitialized: true,
   })
@@ -31,7 +32,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 
-const mongoURI = "mongodb://localhost:27017/bookStore";
+const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/bookStore";
 
 const connectDB = async () => {
   await mongoose.connect(
